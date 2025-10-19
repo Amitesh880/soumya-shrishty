@@ -1,7 +1,18 @@
-import React from 'react'
+import React,{useState} from 'react'
 import { NavLink } from 'react-router-dom'
+import AddPropertyModal from './AddPropertyModal'
+import useAuthCheck from '../hooks/useAuthCheck'
 
 const Navbar = ({containerStyles}) => {
+  const [modalOpened,setModalOpened]=useState(false)
+  const {validateLogin} = useAuthCheck()
+
+ const handleAddPropertyClick = ()=>{
+   if(validateLogin()){
+    setModalOpened(true)
+   }
+ }
+
   return (
     <nav className={`${containerStyles}`}>
         <NavLink to={'/'} className={({isActive})=>isActive ? "relative after:w-2/3 after:h-[2px] after:rounded-full after:bg-black after:absolute after:-bottom-2 after:left-0 py-1" :"py-1"} >
@@ -15,10 +26,10 @@ const Navbar = ({containerStyles}) => {
         Contact
 
         </NavLink>
-        <NavLink to={'/add-property'} className={({isActive})=>isActive ? "relative after:w-2/3 after:h-[2px] after:rounded-full after:bg-black after:absolute after:-bottom-2 after:left-0 py-1" :"py-1"} >
+        <div onClick={handleAddPropertyClick} className={"py-1 cursor-pointer"} >
         Add Property
-
-        </NavLink>
+        </div>
+        <AddPropertyModal opened={modalOpened} setOpened={setModalOpened} />
     </nav>
   )
 }

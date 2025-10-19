@@ -2,14 +2,17 @@ import React from 'react'
 import { CgRuler } from 'react-icons/cg'
 import { FaHeart } from 'react-icons/fa'
 import { MdOutlineBathtub, MdOutlineBed, MdOutlineGarage } from 'react-icons/md'
+import { useNavigate } from 'react-router-dom'
+import HeartBtn from './HeartBtn'
 
 const Item = ({property}) => {
+  const navigate=useNavigate()
   return (
-    <div className='rounded-lg overflow-hidden bg-white ring ring-slate-900/5'>
+    <div onClick={()=>{navigate(`../listing/${property.id}`)}} className='rounded-lg overflow-hidden bg-white ring ring-slate-900/5'>
       <div className='relative'>
         <img src ={property.image} alt={property.title} className='h-[13rem] w-full aspect-square object-cover'/>
         <div className='absolute top-4 right-6'>
-            <FaHeart className='text-white text-xl'/>
+            <HeartBtn id={property.id}/>
         </div>
      </div>
         <div className='m-3'>

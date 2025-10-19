@@ -35,7 +35,7 @@ export const bookVisit = asyncHandler(async (req, res) => {
                     bookedVisits: { push: { id, date } }
                 }
             })
-            res.send("Your visit is booked successfully")
+           res.status(200).json({ message: "Your visit is booked successfully" });
         }
     } catch (err) {
         throw new Error(err.message)
