@@ -7,41 +7,30 @@ import { residencyRoute } from "./routes/residencyRoute.js";
 
 dotenv.config();
 const app = express();
+// PORT definition is unnecessary in a serverless export environment
 
-// --- CORS Configuration ---
-// Setting explicit allowed origins and credentials to resolve CORS issues
-const allowedOrigins = [
-    "https://real-estate-project-ed7qs1kjr-amitesh880s-projects.vercel.app", 
-    "http://localhost:3000"
-];
-
+// Define CORS options using the allowed origins you specified
 const corsOptions = {
-    origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
+    origin: ["https://real-estate-project-ed7qs1kjr-amitesh880s-projects.vercel.app", "http://localhost:3000"],
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"]
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
 };
 
 // Middleware
 app.use(express.json());
 app.use(cookieParser());
+
+// Use CORS middleware (this handles all preflight OPTIONS requests automatically)
 app.use(cors(corsOptions));
-// Handle preflight requests for all routes
-app.options("*", cors(corsOptions));
+
+// FIX: Removed the problematic line 'app.options("*", cors(corsOptions))'
+// which was causing the PathError due to a conflict with '*' and path-to-regexp.
+
 
 // Routes
 app.use("/api/User", userRoute);
 app.use("/api/residency", residencyRoute);
-
-// Health check route
-app.get("/health", (req, res) => {
-    res.status(200).json({ status: "ok" });
-});
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -54,6 +43,10 @@ app.use((err, req, res, next) => {
     });
 });
 
-// --- VERCEL EXPORT FIX ---
-// This is the CRITICAL change: export the app instead of using app.listen()
+// Health check route
+app.get("/health", (req, res) => {
+    res.status(200).json({ status: "ok" });
+});
+
+// Vercel Serverless Export (Replaces app.listen)
 export default app;
