@@ -33,3 +33,4 @@ model Residency {
     updatedAt   DateTime @updatedAt
    @@unique(fields: [address,userEmail])
 }
+

@@ -46,6 +46,7 @@ export const getResidency=asyncHandler(async(req,res)=>{
         const residency=await prisma.residency.findUnique({where :{ id }})
         res.send(residency)
     }catch(err){
+        console.log(err)
         throw new Error(err.message)
     }
 })

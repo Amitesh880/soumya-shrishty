@@ -6,6 +6,7 @@ import Listing from './pages/Listing'
 import Property from './pages/Property'
 import Favourites from './pages/Favourites'
 import Bookings from './pages/Bookings'
+import Contact from './pages/Contact'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { ReactQueryDevtools } from 'react-query/devtools'
 import { ToastContainer } from 'react-toastify'
@@ -29,6 +30,7 @@ const App = () => {
         <Routes>
           <Route element={<Layout />}>
             <Route path='/' element={<Home />} />
+            <Route path='/contact' element={<Contact />} />
             <Route path='/listing'>
               <Route index element={<Listing />} />
               <Route path=':propertyId' element={<Property />} />

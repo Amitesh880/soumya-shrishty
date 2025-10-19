@@ -22,7 +22,7 @@ const Navbar = ({containerStyles}) => {
         Listing
 
         </NavLink>
-        <NavLink to={'mailto:info@zenhomes.com'} className={({isActive})=>isActive ? "relative after:w-2/3 after:h-[2px] after:rounded-full after:bg-black after:absolute after:-bottom-2 after:left-0 py-1" :"py-1"}  >
+        <NavLink to={'/contact'} className={({isActive})=>isActive ? "relative after:w-2/3 after:h-[2px] after:rounded-full after:bg-black after:absolute after:-bottom-2 after:left-0 py-1" :"py-1"}  >
         Contact
 
         </NavLink>
