@@ -10,10 +10,13 @@ export const api = axios.create({
     }
 });
 
-export const getAllProperties = async () => {
+export const getAllProperties = async (token) => {
     try {
         const response = await api.get("/residency/allresd", {
             timeout: 10 * 1000,
+            headers: {
+                Authorization: `Bearer ${token}`,
+            }
         })
         if (response.status === 400 || response.status === 500) {
             throw response.data
@@ -56,27 +59,27 @@ export const createUser = async (email, token) => {
 }
 
 export const bookVisit = async (date, propertyId, email, token) => {
-  try {
-    const response = await api.post(
-      `/User/bookVisit/${propertyId}`,
-      {
-        email,
-        id: propertyId,
-        date: dayjs(date).format("DD-MM-YYYY"),
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    console.log("✅ API response:", response.data);
-    return response.data;
-  } catch (error) {
-    console.error("Booking error:", error.response?.data || error.message);
-    toast.error("Something went wrong, please try again");
-    throw error;
-  }
+    try {
+        const response = await api.post(
+            `/User/bookVisit/${propertyId}`,
+            {
+                email,
+                id: propertyId,
+                date: dayjs(date).format("DD-MM-YYYY"),
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
+        console.log("✅ API response:", response.data);
+        return response.data;
+    } catch (error) {
+        console.error("Booking error:", error.response?.data || error.message);
+        toast.error("Something went wrong, please try again");
+        throw error;
+    }
 };
 
 export const removeBooking = async (id,email,token) =>{
