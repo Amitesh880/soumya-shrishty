@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 8000;
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-    origin: ["https://real-estate-project-7am4jqiq9-amitesh880s-projects.vercel.app", "http://localhost:3000"],
+    origin: ["https://real-estate-project-ed7qs1kjr-amitesh880s-projects.vercel.app", "http://localhost:3000"],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"]
 }));
