@@ -5,12 +5,12 @@ import cookieParser from "cookie-parser";
 import { userRoute } from "./routes/userRoute.js";
 import { residencyRoute } from "./routes/residencyRoute.js";
 
+// Load environment variables
 dotenv.config();
 
 const app = express();
 
-const PORT = process.env.PORT || 8000;
-
+// --- CORS Configuration (Kept for robustness) ---
 const allowedOrigins = "*"; 
 
 const corsOptions = {
@@ -21,16 +21,18 @@ const corsOptions = {
     optionsSuccessStatus: 204
 };
 
+// --- Middleware ---
 app.use(express.json());
 app.use(cookieParser());
 
 app.use(cors(corsOptions));
-
 app.options("*", cors(corsOptions));
 
+// --- Routes ---
 app.use("/api/User", userRoute);
 app.use("/api/residency", residencyRoute);
 
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);  
-});
+// --- Vercel Serverless Export ---
+// 1. Remove app.listen()
+// 2. Export the 'app' instance as the handler
+export default app; 
