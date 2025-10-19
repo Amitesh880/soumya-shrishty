@@ -11,7 +11,7 @@ const app = express();
 
 // Define CORS options using the allowed origins you specified
 const corsOptions = {
-    origin: ["https://real-estate-project-ed7qs1kjr-amitesh880s-projects.vercel.app", "http://localhost:3000"],
+    origin: ["https://real-estate-project-henna-seven.vercel.app", "http://localhost:3000"],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
