@@ -29,7 +29,7 @@ app.use(cors(corsOptions));
 
 
 // Routes
-app.use("/api/User", userRoute);
+app.use("/api/user", userRoute);
 app.use("/api/residency", residencyRoute);
 
 // Error handling middleware
