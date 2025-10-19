@@ -11,13 +11,7 @@ const Home = () => {
 
   const {loginWithRedirect, isAuthenticated,user ,logout}= useAuth0()
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowPopup(true);
-    }, 1000); // 10 seconds
 
-    return () => clearTimeout(timer);
-  }, []);
 
   return (
     <main className=' w-full mx-auto  bg-gradient-to-r from-yellow-200 via-white to-white'>
