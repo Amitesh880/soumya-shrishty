@@ -5,12 +5,10 @@ import Achievements from '../components/Achievements'
 import Properties from '../components/Properties'
 import About from '../components/About'
 import Testimonals from '../components/Testimonals'
-import Popup from '../components/popup'
 import { useAuth0 } from '@auth0/auth0-react'
 
 const Home = () => {
 
-  const [showPopup, setShowPopup] = useState(false);
   const {loginWithRedirect, isAuthenticated,user ,logout}= useAuth0()
 
   useEffect(() => {
@@ -27,7 +25,7 @@ const Home = () => {
       <Hero/>
       <Features/>
       <Achievements/>
-      {!isAuthenticated && showPopup && <Popup onClose={() => setShowPopup(false)} />}
+      {!isAuthenticated }
       <Properties/>
       <About/>
       <Testimonals/>
