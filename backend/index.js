@@ -7,20 +7,41 @@ import { residencyRoute } from "./routes/residencyRoute.js";
 
 dotenv.config();
 const app = express();
-const PORT = process.env.PORT || 8000;
+
+// --- CORS Configuration ---
+// Setting explicit allowed origins and credentials to resolve CORS issues
+const allowedOrigins = [
+    "https://real-estate-project-ed7qs1kjr-amitesh880s-projects.vercel.app", 
+    "http://localhost:3000"
+];
+
+const corsOptions = {
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"]
+};
 
 // Middleware
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({
-    origin: ["https://real-estate-project-ed7qs1kjr-amitesh880s-projects.vercel.app", "http://localhost:3000"],
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"]
-}));
+app.use(cors(corsOptions));
+// Handle preflight requests for all routes
+app.options("*", cors(corsOptions));
 
 // Routes
 app.use("/api/User", userRoute);
 app.use("/api/residency", residencyRoute);
+
+// Health check route
+app.get("/health", (req, res) => {
+    res.status(200).json({ status: "ok" });
+});
 
 // Error handling middleware
 app.use((err, req, res, next) => {
@@ -33,18 +54,6 @@ app.use((err, req, res, next) => {
     });
 });
 
-// Health check route
-app.get("/health", (req, res) => {
-    res.status(200).json({ status: "ok" });
-});
-
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
-
-// Handle unhandled rejections
-process.on("unhandledRejection", (err) => {
-    console.log("UNHANDLED REJECTION! Shutting down...");
-    console.log(err.name, err.message);
-    process.exit(1);
-});
+// --- VERCEL EXPORT FIX ---
+// This is the CRITICAL change: export the app instead of using app.listen()
+export default app;
