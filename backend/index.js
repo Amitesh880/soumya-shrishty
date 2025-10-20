@@ -21,18 +21,12 @@ const corsOptions = {
 app.use(express.json());
 app.use(cookieParser());
 
-// Use CORS middleware (this handles all preflight OPTIONS requests automatically)
 app.use(cors(corsOptions));
-
-// FIX: Removed the problematic line 'app.options("*", cors(corsOptions))'
-// which was causing the PathError due to a conflict with '*' and path-to-regexp.
-
 
 // Routes
 app.use("/api/user", userRoute);
 app.use("/api/residency", residencyRoute);
 
-// Error handling middleware
 app.use((err, req, res, next) => {
     const statusCode = err.statusCode || 500;
     const message = err.message || "Internal Server Error";
@@ -43,7 +37,6 @@ app.use((err, req, res, next) => {
     });
 });
 
-// Health check route
 app.get("/health", (req, res) => {
     res.status(200).json({ status: "ok" });
 });
