@@ -18,7 +18,7 @@
         "Access-Control-Allow-Headers": "Content-Type,Authorization,Cookie"
       }
     },
-    // This catch-all route sends all remaining traffic (like /health) to your app
+  
     {
       "src": "/(.*)",
       "dest": "/index.js"
