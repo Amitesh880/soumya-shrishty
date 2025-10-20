@@ -11,7 +11,7 @@ const app = express();
 
 // Define CORS options using the allowed origins you specified
 const corsOptions = {
-    origin: ["https://real-estate-project-henna-seven.vercel.app", "http://localhost:3000"],
+    origin: ["https://real-estate-project-henna-seven.vercel.app", "http://localhost:5173/"],
     withCredentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -46,6 +46,11 @@ app.use((err, req, res, next) => {
 // Health check route
 app.get("/health", (req, res) => {
     res.status(200).json({ status: "ok" });
+});
+
+const PORT = process.env.PORT || 5000; // Use a default port
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });
 
 // Vercel Serverless Export (Replaces app.listen)
