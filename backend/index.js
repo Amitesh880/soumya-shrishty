@@ -14,7 +14,7 @@ const corsOptions = {
     origin: ["https://real-estate-project-henna-seven.vercel.app", "http://localhost:5173/"],
     withCredentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    allowedHeaders: ["Content-Type", "Authorization","Cookie"],
 };
 
 // Middleware
