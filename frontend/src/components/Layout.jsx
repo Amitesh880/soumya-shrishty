@@ -14,7 +14,7 @@ const Layout = () => {
   useFavourites()
   useBookings()
 
-  const {isAuthenticated,user, getAccessTokenWithPopup} = useAuth0();
+  const {isAuthenticated,user, getAccessTokenSilently, getAccessTokenWithPopup} = useAuth0();
   const {setUserDetails} = useContext(UserDetailContext);
   const {mutate} = useMutation({
     mutationKey:[user?.email],
@@ -23,15 +23,35 @@ const Layout = () => {
 
   useEffect(()=>{
     const getTokenAndRegister = async()=>{
-      const res = await getAccessTokenWithPopup({
-        authorizationParams:{
-          audience:"http://localhost:3000",
-          scope:"openid profile email"
+      try {
+        const res = await getAccessTokenSilently({
+          authorizationParams:{
+            audience:"https://real-estate-backend-nine-opal.vercel.app",
+            scope:"openid profile email"
+          }
+        })
+        console.log("Access token retrieved:", res ? "Success" : "Failed");
+        localStorage.setItem("access_token",res)
+        setUserDetails((prev)=>({...prev,token:res}))
+        mutate(res)
+      } catch (error) {
+        console.error("Error getting access token:", error);
+        // If silent token retrieval fails, try with popup as fallback
+        try {
+          const res = await getAccessTokenWithPopup({
+            authorizationParams:{
+              audience:"https://real-estate-backend-nine-opal.vercel.app",
+              scope:"openid profile email"
+            }
+          })
+          console.log("Access token retrieved via popup:", res ? "Success" : "Failed");
+          localStorage.setItem("access_token",res)
+          setUserDetails((prev)=>({...prev,token:res}))
+          mutate(res)
+        } catch (popupError) {
+          console.error("Error getting access token via popup:", popupError);
         }
-      })
-      localStorage.setItem("access_token",res)
-      setUserDetails((prev)=>({...prev,token:res}))
-      mutate(res)
+      }
     }
     isAuthenticated && getTokenAndRegister()
   },[isAuthenticated])
