@@ -44,6 +44,36 @@ app.get("/health", (req, res) => {
     res.status(200).json({ status: "ok" });
 });
 
+// Simple test endpoint for listing
+app.get("/api/test", (req, res) => {
+    res.status(200).json({ 
+        message: "Backend is working",
+        timestamp: new Date().toISOString(),
+        environment: process.env.NODE_ENV || "development"
+    });
+});
+
+// Test residency endpoint
+app.get("/api/residency/test", async (req, res) => {
+    try {
+        await prisma.$connect();
+        const count = await prisma.residency.count();
+        res.status(200).json({
+            message: "Residency endpoint is working",
+            residency_count: count,
+            database_connected: true,
+            timestamp: new Date().toISOString()
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: "Residency endpoint error",
+            error: error.message,
+            database_connected: false,
+            timestamp: new Date().toISOString()
+        });
+    }
+});
+
 // Database health check
 app.get("/api/health/db", async (req, res) => {
     try {

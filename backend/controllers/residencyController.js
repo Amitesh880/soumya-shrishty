@@ -2,59 +2,89 @@ import { prisma } from "../config/prismaConfig.js";
 import asyncHandler from "express-async-handler"
 
 export const createResidency=asyncHandler(async(req,res)=>{
-    const{ title,description,price,address,country,city,facilities,image }=req.body.data || req.body
+    console.log("Creating residency with data:", req.body);
+    
+    const{ title,description,price,address,country,city,facilities,image,userEmail }=req.body
     const userId = req.userId
 
-    console.log(req.body.data)
+    console.log("User ID:", userId);
+    console.log("User Email:", userEmail);
+    
+    // Validate required fields
+    if (!title || !description || !price || !address || !country || !city) {
+        return res.status(400).json({
+            success: false,
+            message: "Missing required fields"
+        });
+    }
+
     try{
         const residency=await prisma.residency.create({
             data:{
                 title,
                 description,
-                price,
+                price: parseInt(price),
                 address,
                 country,
                 city,
-                facilities,
-                image,
-                owner :{connect:{id:userId}} 
+                facilities: facilities || {},
+                image: image || "https://images.unsplash.com/photo-1584738766473-61c083514bf4?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                ownerId: userId
             }
         })
 
-        res.send({message:"Residency created successfully",residency})
+        console.log("Residency created successfully:", residency);
+        res.status(201).json({
+            success: true,
+            message: "Residency created successfully",
+            residency
+        });
     }catch(err){
+        console.error("Error creating residency:", err);
         if(err.code==="P2002"){
-            throw new Error("Already have a residency with this address")
+            return res.status(400).json({
+                success: false,
+                message: "Already have a residency with this address"
+            });
         }
-        throw new Error(err.message)
+        return res.status(500).json({
+            success: false,
+            message: err.message || "Failed to create residency"
+        });
     }
     
 })
 
  export const getAllResidencies=asyncHandler(async(req,res)=>{
     try {
-        console.log("Fetching all residencies from MongoDB...");
-        console.log("Database URL:", process.env.DATABASE_URL ? "Set in environment" : "Not set in environment");
+        console.log("=== FETCHING RESIDENCIES ===");
+        console.log("Request headers:", req.headers);
+        console.log("Database URL status:", process.env.DATABASE_URL ? "Set" : "Not set");
         
         // Test database connection first
         await prisma.$connect();
-        console.log("Database connected successfully");
+        console.log("✅ Database connected successfully");
         
         const residencies=await prisma.residency.findMany({
             orderBy:{
                 createdAt:"desc"
             }
         })
-        console.log(`Found ${residencies.length} residencies from database`);
+        console.log(`✅ Found ${residencies.length} residencies from database`);
         
         // Log first residency for debugging
         if (residencies.length > 0) {
-            console.log("First residency:", JSON.stringify(residencies[0], null, 2));
+            console.log("First residency sample:", {
+                id: residencies[0].id,
+                title: residencies[0].title,
+                price: residencies[0].price,
+                city: residencies[0].city
+            });
         }
         
         // If no residencies found, return sample data
         if (residencies.length === 0) {
-            console.log("No residencies found in database, returning sample data");
+            console.log("⚠️ No residencies found in database, returning sample data");
             const sampleData = [
                 {
                     id: "sample-1",
@@ -73,11 +103,12 @@ export const createResidency=asyncHandler(async(req,res)=>{
             return res.status(200).json(sampleData);
         }
         
-        console.log("Returning", residencies.length, "residencies from database");
+        console.log("✅ Returning", residencies.length, "residencies from database");
         res.status(200).json(residencies);
     } catch (error) {
-        console.error("Error fetching residencies:", error);
+        console.error("❌ Error fetching residencies:", error);
         console.error("Error details:", error.message);
+        console.error("Error stack:", error.stack);
         
         // Return sample data on error to prevent frontend crashes
         const sampleData = [

@@ -12,20 +12,37 @@ export const api = axios.create({
 
 export const getAllProperties = async (token) => {
     try {
+        console.log("🔍 Fetching properties from API...");
+        console.log("Token available:", !!token);
+        
         const headers = token ? {
             Authorization: `Bearer ${token}`,
         } : {}
+        
+        console.log("Request headers:", headers);
         
         const response = await api.get("/residency/allresd", {
             timeout: 10 * 1000,
             headers
         })
+        
+        console.log("✅ API Response received:", {
+            status: response.status,
+            dataLength: response.data?.length || 0,
+            firstItem: response.data?.[0]?.title || "No items"
+        });
+        
         if (response.status === 400 || response.status === 500) {
             throw response.data
         }
-        return response.data.reverse()
+        
+        const reversedData = response.data.reverse();
+        console.log("✅ Returning", reversedData.length, "properties");
+        return reversedData;
     } catch (error) {
-        toast.error("Something went wrong")
+        console.error("❌ Error fetching properties:", error);
+        console.error("Error details:", error.response?.data || error.message);
+        toast.error("Something went wrong while fetching properties")
         throw error
     }
 }
@@ -151,7 +168,7 @@ export const getAllBookings = async (email,token) =>{
 export const createResidency = async (data,token,userEmail)=>{
 
     const requestData = {...data,userEmail};
-    console.log(requestData)
+    console.log("Sending data to backend:", requestData);
 
     try{
         const res = await api.post(`/residency/create`,
@@ -162,7 +179,10 @@ export const createResidency = async (data,token,userEmail)=>{
                 }
             }
         )
+        console.log("Response from backend:", res.data);
+        return res.data;
     } catch(e) {
+        console.error("Error creating residency:", e);
         toast.error("Something went wrong while creating residency")
         throw e
     }
