@@ -34,12 +34,4 @@ model Residency {
    @@unique(fields: [address,userEmail])
 }
 
-model ContactMessage {
-    id            String    @id @default(auto()) @map("_id") @db.ObjectId
-    name          String  
-    email         String   
-    contactNumber String   
-    message       String    
-    submittedAt   DateTime  @default(now()) 
-}
 
