@@ -1,163 +1,132 @@
-import axios from "axios"
-import dayjs from "dayjs"
-import { toast } from "react-toastify"
+import axios from "axios";
+import dayjs from "dayjs";
+import { toast } from "react-toastify";
 
 export const api = axios.create({
-    baseURL: "https://real-estate-backend-nine-opal.vercel.app/api",
-    withCredentials: true,
-    headers: {
-        'Content-Type': 'application/json'
-    }
+  baseURL: "https://real-estate-backend-nine-opal.vercel.app/api",
+  withCredentials: true,
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
+// 🟢 Properties
 export const getAllProperties = async (token) => {
-    try {
-        const response = await api.get("/residency/allresd", {
-            timeout: 10 * 1000,
-            headers: {
-                Authorization: `Bearer ${token}`,
-            }
-        })
-        if (response.status === 400 || response.status === 500) {
-            throw response.data
-        }
-        return response.data.reverse()
-    } catch (error) {
-        toast.error("Something went wrong")
-        throw error
-    }
-}
-
-export const getProperty = async (id) => {
-    try {
-        const response = await api.get(`/residency/${id}`, {
-            timeout: 10 * 1000,
-        })
-        if (response.status === 400 || response.status === 500) {
-            throw response.data
-        }
-        return response.data
-    } catch (error) {
-        toast.error("Something went wrong")
-        throw error
-    }
-}
-
-export const createUser = async (email, token) => {
-    try{
-        await api.post(`/user/register`,{email},
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                }
-            }
-        )
-    } catch (error){
-        toast.error("Something went wrong,Please try again")
-        throw error
-    }
-}
-
-export const bookVisit = async (date, propertyId, email, token) => {
-    try {
-        const response = await api.post(
-            `/User/bookVisit/${propertyId}`,
-            {
-                email,
-                id: propertyId,
-                date: dayjs(date).format("DD-MM-YYYY"),
-            },
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            }
-        );
-        console.log("✅ API response:", response.data);
-        return response.data;
-    } catch (error) {
-        console.error("Booking error:", error.response?.data || error.message);
-        toast.error("Something went wrong, please try again");
-        throw error;
-    }
+  try {
+    const res = await api.get("/residency/allresd", {
+      timeout: 10000,
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.data.reverse();
+  } catch (error) {
+    toast.error("Failed to load properties");
+    throw error;
+  }
 };
 
-export const removeBooking = async (id,email,token) =>{
-    try{
-        await api.post(`/user/removeBooking/${id}`,{email},{
-            headers:{
-                Authorization: `Bearer ${token}`,
-            }
-        }
-    )
-    } catch(error){
-        toast.error("Something went wrong, please try again")
-        throw error
-    }
-}
+export const getProperty = async (id) => {
+  try {
+    const res = await api.get(`/residency/${id}`, { timeout: 10000 });
+    return res.data;
+  } catch (error) {
+    toast.error("Failed to load property details");
+    throw error;
+  }
+};
 
+// 🟢 Users
+export const createUser = async (email) => {
+  try {
+    await api.post("/user/register", { email });
+  } catch (error) {
+    toast.error("User registration failed");
+    throw error;
+  }
+};
 
-export const toFav = async (id,email,token) =>{
-    try{
-        await api.post(`/user/toFav/${id}`,{email},{
-            headers:{
-                Authorization: `Bearer ${token}`,
-            }
-        }
-    )
-    } catch(error){
-        throw error
-    }
-}
+// 🟢 Book Visit
+export const bookVisit = async (date, propertyId, token) => {
+  try {
+    const res = await api.post(
+      `/user/bookVisit/${propertyId}`,
+      { date: dayjs(date).format("DD-MM-YYYY") },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    console.log("✅ Booking response:", res.data);
+    return res.data;
+  } catch (error) {
+    console.error("Booking error:", error.response?.data || error.message);
+    toast.error("Booking failed");
+    throw error;
+  }
+};
 
-export const getAllFav = async (email,token) =>{
-    if(!token) return 
-    try{
-        const res = await api.post(`/user/allFav/`,{email},{
-            headers:{
-                Authorization: `Bearer ${token}`,
-            }
-        }
-    )
-    return res.data["favResidenciesID"]
-    } catch(error){
-        toast.error("Something went wrong while fetching fav list, please try again")
-        throw error
-    }
-}
+// 🟢 Cancel Booking
+export const removeBooking = async (id, token) => {
+  try {
+    await api.delete(`/user/removeBooking/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+  } catch (error) {
+    toast.error("Failed to cancel booking");
+    throw error;
+  }
+};
 
-export const getAllBookings = async (email,token) =>{
-    if(!token) return 
-    try{
-        const res = await api.post(`/user/allBookings/`,{email},{
-            headers:{
-                Authorization: `Bearer ${token}`,
-            }
-        }
-    )
-    return res.data["bookedVisits"]
-    } catch(error){
-        toast.error("Something went wrong while fetching booking list, please try again")
-        throw error
-    }
-}
+// 🟢 Favourites
+export const toFav = async (id, token) => {
+  try {
+    await api.post(`/user/toFav/${id}`, {}, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+  } catch (error) {
+    toast.error("Failed to update favourites");
+    throw error;
+  }
+};
 
-export const createResidency = async (data,token,userEmail)=>{
+export const getAllFav = async (token) => {
+  if (!token) return;
+  try {
+    const res = await api.get("/user/allFav", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.data.favResidenciesID;
+  } catch (error) {
+    toast.error("Failed to fetch favourites");
+    throw error;
+  }
+};
 
-    const requestData = {...data,userEmail};
-    console.log(requestData)
+// 🟢 Bookings
+export const getAllBookings = async (token) => {
+  if (!token) return;
+  try {
+    const res = await api.get("/user/allBookings", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.data.bookedVisits;
+  } catch (error) {
+    toast.error("Failed to fetch bookings");
+    throw error;
+  }
+};
 
-    try{
-        const res = await api.post(`/residency/create`,
-            requestData,
-            {
-                headers:{
-                    Authorization:`Bearer ${token}`,
-                }
-            }
-        )
-    } catch(e) {
-        toast.error("Something went wrong while creating residency")
-        throw e
-    }
-}
+// 🟢 Create Residency
+export const createResidency = async (data, token, userEmail) => {
+  try {
+    const res = await api.post(
+      "/residency/create",
+      { ...data, userEmail },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    return res.data;
+  } catch (error) {
+    toast.error("Failed to create residency");
+    throw error;
+  }
+};
