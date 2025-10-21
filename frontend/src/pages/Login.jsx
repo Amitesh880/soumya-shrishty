@@ -6,12 +6,14 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import UserDetailContext from '../context/UserDetailContext';
 import { useContext } from 'react';
+import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const { setUserDetails } = useContext(UserDetailContext);
+  const { login, register } = useAuth();
 
   const form = useForm({
     initialValues: {
@@ -29,25 +31,13 @@ const Login = () => {
     setError('');
 
     try {
-      const response = await fetch('https://real-estate-backend-nine-opal.vercel.app/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(values),
-      });
+      const result = await login(values.email, values.password);
 
-      const data = await response.json();
-
-      if (response.ok) {
-        // Store token and user data
-        localStorage.setItem('access_token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
-        
-        // Update context
+      if (result.success) {
+        // Update user details context
         setUserDetails({
-          token: data.token,
-          user: data.user,
+          token: result.token,
+          user: result.user,
           Favourites: [],
           bookings: [],
         });
@@ -55,8 +45,8 @@ const Login = () => {
         toast.success('Login successful!');
         navigate('/');
       } else {
-        setError(data.message || 'Login failed');
-        toast.error(data.message || 'Login failed');
+        setError(result.message || 'Login failed');
+        toast.error(result.message || 'Login failed');
       }
     } catch (err) {
       setError('Network error. Please try again.');
@@ -71,22 +61,14 @@ const Login = () => {
     setError('');
 
     try {
-      const response = await fetch('https://real-estate-backend-nine-opal.vercel.app/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(values),
-      });
+      const result = await register(values.email, values.password, values.name || values.email.split('@')[0]);
 
-      const data = await response.json();
-
-      if (response.ok) {
-        toast.success('Registration successful! Please login.');
+      if (result.success) {
+        toast.success(result.message || 'Registration successful! Please login.');
         form.setValues({ email: values.email, password: '' });
       } else {
-        setError(data.message || 'Registration failed');
-        toast.error(data.message || 'Registration failed');
+        setError(result.message || 'Registration failed');
+        toast.error(result.message || 'Registration failed');
       }
     } catch (err) {
       setError('Network error. Please try again.');
