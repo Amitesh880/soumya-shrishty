@@ -45,7 +45,7 @@ export const bookVisit = asyncHandler(async (req, res) => {
 });
 
 export const allBookings = asyncHandler(async (req, res) => {
-    const { email } = req.body
+    const email = req.auth?.email
     try {
         const bookings = await prisma.user.findUnique({
             where: { email },
@@ -59,7 +59,7 @@ export const allBookings = asyncHandler(async (req, res) => {
 })
 
 export const cancelBooking = asyncHandler(async (req, res) => {
-    const { email } = req.body
+    const email = req.auth?.email
     const { id } = req.params
     try {
         const user = await prisma.user.findUnique({
@@ -85,7 +85,7 @@ export const cancelBooking = asyncHandler(async (req, res) => {
 })
 
 export const toFav = asyncHandler(async (req, res) => {
-    const { email } = req.body
+    const email = req.auth?.email
     const { rid } = req.params
     try {
         const user = await prisma.user.findUnique({
@@ -120,7 +120,7 @@ export const toFav = asyncHandler(async (req, res) => {
 
 
 export const getAllFav=asyncHandler(async(req,res)=>{
-    const { email } =req.body
+    const email = req.auth?.email
     try{
         const favResd=await prisma.user.findUnique({
             where: { email },
