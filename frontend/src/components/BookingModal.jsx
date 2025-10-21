@@ -1,18 +1,19 @@
 import React, { useState, useContext } from "react";
 import { Modal, Button } from "@mantine/core";
-import UserDetailContext from "../context/UserDetailContext";
-import { useMutation } from "react-query";
 import { DatePicker } from "@mantine/dates";
-import { bookVisit } from "../utils/api";
-import dayjs from "dayjs";
+import { useMutation } from "react-query";
 import { toast } from "react-toastify";
+import dayjs from "dayjs";
+import { useAuth0 } from "@auth0/auth0-react";
 
-const BookingModal = ({ opened, setopened, propertyId, email }) => {
+import UserDetailContext from "../context/UserDetailContext";
+import { bookVisit } from "../utils/api";
+
+const BookingModal = ({ opened, setopened, propertyId }) => {
   const [value, setvalue] = useState(null);
-  const {
-    userDetails: { token },
-    setUserDetails,
-  } = useContext(UserDetailContext);
+  const { getAccessTokenSilently } = useAuth0();
+
+  const { userDetails, setUserDetails } = useContext(UserDetailContext);
 
   const handleBookingSuccess = () => {
     toast.success("You have booked a visit successfully", {
@@ -32,8 +33,11 @@ const BookingModal = ({ opened, setopened, propertyId, email }) => {
   };
 
   const { mutate, isLoading } = useMutation({
-    mutationFn: () => bookVisit(value, propertyId, email, token),
-    onSuccess: () => handleBookingSuccess(),
+    mutationFn: async () => {
+      const token = await getAccessTokenSilently();
+      return bookVisit(value, propertyId, token); // no email passed
+    },
+    onSuccess: handleBookingSuccess,
     onError: (error) => {
       const message = error?.response?.data?.message || "Booking failed";
       toast.error(message, { position: "bottom-right" });

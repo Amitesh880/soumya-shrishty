@@ -16,18 +16,35 @@ export const createUser = asyncHandler(async (req, res) => {
 
 })
 
+import { prisma } from "../config/prismaConfig.js";
+import asyncHandler from "express-async-handler";
+
 export const bookVisit = asyncHandler(async (req, res) => {
   const email = req.auth?.email;
   const { date } = req.body;
   const { id } = req.params;
 
+  if (!email) {
+    return res.status(401).json({ message: "Unauthorized: Missing user email from token" });
+  }
+
+  if (!date || !id) {
+    return res.status(400).json({ message: "Missing booking date or residency ID" });
+  }
+
   try {
-    const alreadyBooked = await prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { email },
       select: { bookedVisits: true }
     });
 
-    if (alreadyBooked.bookedVisits.some((visit) => visit.id === id)) {
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const alreadyBooked = user.bookedVisits.some((visit) => visit.id === id);
+
+    if (alreadyBooked) {
       return res.status(400).json({ message: "This residency is already booked by you" });
     }
 
@@ -40,7 +57,8 @@ export const bookVisit = asyncHandler(async (req, res) => {
 
     res.status(200).json({ message: "Your visit is booked successfully" });
   } catch (err) {
-    throw new Error(err.message);
+    console.error("Booking error:", err);
+    res.status(500).json({ message: "Internal server error" });
   }
 });
 
