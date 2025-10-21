@@ -17,8 +17,9 @@ const Properties = () => {
      const {data,isError,isLoading}=useProperties()
 
      if(isError) {
-      return <div>
-        <span>Error fetching data</span>
+      return <div className='h-64 flex flex-col justify-center items-center mt-24'>
+        <span className='text-red-500 text-lg'>Error fetching data</span>
+        <span className='text-gray-500 text-sm mt-2'>Please check your connection and try again</span>
         </div>
         }
      if(isLoading) {
@@ -59,11 +60,19 @@ const Properties = () => {
     modules={[Autoplay]}
     className="h-[488px] md:h-[533px] xl:h-[422px] mt-5"
     >
-        {data.slice(0,6).map((property)=>(
-             <SwiperSlide key={property.title}>
-                <Item property={property}/>
-             </SwiperSlide>
-        ))}
+        {data && data.length > 0 ? (
+          data.slice(0,6).map((property)=>(
+               <SwiperSlide key={property.id || property.title}>
+                  <Item property={property}/>
+               </SwiperSlide>
+          ))
+        ) : (
+          <SwiperSlide>
+            <div className='text-center py-8'>
+              <span className='text-gray-500 text-lg'>No properties available</span>
+            </div>
+          </SwiperSlide>
+        )}
        
     </Swiper>
     </div>

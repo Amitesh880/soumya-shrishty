@@ -8,8 +8,9 @@ const Listing = () => {
      const [filter, setFilter] = useState(''); // ← undefined by default
      const {data,isError,isLoading}=useProperties()
      if(isError) {
-      return <div>
-        <span>Error fetching data</span>
+      return <div className='h-64 flex flex-col justify-center items-center mt-24'>
+        <span className='text-red-500 text-lg'>Error fetching data</span>
+        <span className='text-gray-500 text-sm mt-2'>Please check your connection and try again</span>
         </div>
         }
      if(isLoading) {
@@ -23,13 +24,19 @@ const Listing = () => {
             <div>
                 <Searchbar filter={filter} setFilter={setFilter}/>
                 <div className='mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-6'>
-                  {data.filter((property)=>
-                    property.title?.toLowerCase().includes(filter.toLowerCase()) ||
-                    property.city?.toLowerCase().includes(filter.toLowerCase()) ||
-                    property.country?.toLowerCase().includes(filter.toLowerCase()) 
-                  ).map((property)=>(
-                    <Item key={property.title} property={property} />
-                  ))}
+                  {data && data.length > 0 ? (
+                    data.filter((property)=>
+                      property.title?.toLowerCase().includes(filter.toLowerCase()) ||
+                      property.city?.toLowerCase().includes(filter.toLowerCase()) ||
+                      property.country?.toLowerCase().includes(filter.toLowerCase()) 
+                    ).map((property)=>(
+                      <Item key={property.id || property.title} property={property} />
+                    ))
+                  ) : (
+                    <div className='col-span-full text-center py-8'>
+                      <span className='text-gray-500 text-lg'>No properties found</span>
+                    </div>
+                  )}
                 </div>
             </div>
         </div>

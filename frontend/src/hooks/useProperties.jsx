@@ -10,7 +10,13 @@ const useProperties = () => {
     "allProperties",
     () => getAllProperties(token),
     { 
-      refetchOnWindowFocus:false
+      refetchOnWindowFocus:false,
+      onSuccess: (data) => {
+        console.log("Properties data received:", data);
+      },
+      onError: (error) => {
+        console.error("Error fetching properties:", error);
+      }
     }
  )
  return{
