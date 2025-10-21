@@ -32,12 +32,19 @@ export const createResidency=asyncHandler(async(req,res)=>{
 })
 
  export const getAllResidencies=asyncHandler(async(req,res)=>{
-    const residencies=await prisma.residency.findMany({
-        orderBy:{
-            createdAt:"desc"
-        }
-    })
-    res.send(residencies)
+    try {
+        console.log("Fetching all residencies...");
+        const residencies=await prisma.residency.findMany({
+            orderBy:{
+                createdAt:"desc"
+            }
+        })
+        console.log(`Found ${residencies.length} residencies`);
+        res.send(residencies)
+    } catch (error) {
+        console.error("Error fetching residencies:", error);
+        throw new Error(`Failed to fetch residencies: ${error.message}`);
+    }
 })
 
 export const getResidency=asyncHandler(async(req,res)=>{
