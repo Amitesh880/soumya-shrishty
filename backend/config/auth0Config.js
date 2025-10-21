@@ -6,7 +6,8 @@ const API_IDENTIFIER = process.env.AUTH0_AUDIENCE || "http://localhost:3000";
 const jwtcheck = auth({
   audience: API_IDENTIFIER,
   issuerBaseURL: ISSUER_BASE_URL,
-  tokenSigningAlg: "RS256"
+  tokenSigningAlg: "RS256",
+  jwksUri: `${ISSUER_BASE_URL}/.well-known/jwks.json` 
 });
 
 export default jwtcheck;
