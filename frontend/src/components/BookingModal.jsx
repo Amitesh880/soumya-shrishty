@@ -32,10 +32,19 @@ const BookingModal = ({ opened, setopened, propertyId, email }) => {
   };
 
   const { mutate, isLoading } = useMutation({
-    mutationFn: () => bookVisit(value, propertyId, email, token),
+    mutationFn: () => {
+      console.log("BookingModal - Token value:", token);
+      console.log("BookingModal - Token type:", typeof token);
+      console.log("BookingModal - Token length:", token?.length);
+      if (!token) {
+        throw new Error("No authentication token available");
+      }
+      return bookVisit(value, propertyId, email, token);
+    },
     onSuccess: () => handleBookingSuccess(),
     onError: (error) => {
-      const message = error?.response?.data?.message || "Booking failed";
+      console.error("Booking error details:", error);
+      const message = error?.response?.data?.message || error?.message || "Booking failed";
       toast.error(message, { position: "bottom-right" });
     },
     onSettled: () => setopened(false),
@@ -45,8 +54,8 @@ const BookingModal = ({ opened, setopened, propertyId, email }) => {
     <Modal opened={opened} onClose={() => setopened(false)} title="Book a Visit" centered>
       <div className="flex justify-center flex-col gap-4">
         <DatePicker value={value} onChange={setvalue} minDate={new Date()} />
-        <Button disabled={!value || isLoading} onClick={() => mutate()}>
-          Book Visit
+        <Button disabled={!value || isLoading || !token} onClick={() => mutate()}>
+          {!token ? "Loading authentication..." : "Book Visit"}
         </Button>
       </div>
     </Modal>

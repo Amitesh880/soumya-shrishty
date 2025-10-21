@@ -60,6 +60,9 @@ export const createUser = async (email, token) => {
 
 export const bookVisit = async (date, propertyId, email, token) => {
     try {
+        console.log("bookVisit API - Token received:", token);
+        console.log("bookVisit API - Authorization header:", `Bearer ${token}`);
+        
         const response = await api.post(
             `/user/bookVisit/${propertyId}`,
             {
@@ -77,6 +80,7 @@ export const bookVisit = async (date, propertyId, email, token) => {
         return response.data;
     } catch (error) {
         console.error("Booking error:", error.response?.data || error.message);
+        console.error("Full error object:", error);
         toast.error("Something went wrong, please try again");
         throw error;
     }
