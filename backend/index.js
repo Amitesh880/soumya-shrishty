@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import { userRoute } from "./routes/userRoute.js";
 import { residencyRoute } from "./routes/residencyRoute.js";
 import { authRoute } from "./routes/authRoute.js";
+import { prisma } from "./config/prismaConfig.js";
 
 dotenv.config();
 const app = express();
@@ -41,6 +42,25 @@ app.use((err, req, res, next) => {
 
 app.get("/health", (req, res) => {
     res.status(200).json({ status: "ok" });
+});
+
+// Database health check
+app.get("/api/health/db", async (req, res) => {
+    try {
+        await prisma.$connect();
+        res.status(200).json({ 
+            status: "ok", 
+            database: "connected",
+            timestamp: new Date().toISOString()
+        });
+    } catch (error) {
+        res.status(500).json({ 
+            status: "error", 
+            database: "disconnected",
+            error: error.message,
+            timestamp: new Date().toISOString()
+        });
+    }
 });
 
 const PORT = process.env.PORT || 5000; // Use a default port
