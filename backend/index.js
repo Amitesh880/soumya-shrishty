@@ -13,15 +13,28 @@ const app = express();
 
 // Define CORS options using the allowed origins you specified
 const corsOptions = {
-    origin: ["https://real-estate-project-henna-seven.vercel.app","http://soumyasrishtyproperties.com","https://soumyasrishtyproperties.com", "http://localhost:5173/"],
+    origin: [
+        "https://real-estate-project-henna-seven.vercel.app",
+        "http://soumyasrishtyproperties.com",
+        "https://soumyasrishtyproperties.com",
+        "http://localhost:5173",
+        "https://localhost:5173"
+    ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization","Cookie"],
+    allowedHeaders: ["Content-Type", "Authorization", "Cookie", "X-Requested-With"],
+    optionsSuccessStatus: 200
 };
 
 // Middleware
 app.use(express.json());
 app.use(cookieParser());
+
+// Add request logging middleware (commented out for production)
+// app.use((req, res, next) => {
+//     console.log(`${new Date().toISOString()} - ${req.method} ${req.path} from ${req.headers.origin || 'no-origin'}`);
+//     next();
+// });
 
 app.use(cors(corsOptions));
 
@@ -50,6 +63,25 @@ app.get("/api/test", (req, res) => {
         message: "Backend is working",
         timestamp: new Date().toISOString(),
         environment: process.env.NODE_ENV || "development"
+    });
+});
+
+// CORS test endpoint
+app.get("/api/cors-test", (req, res) => {
+    res.status(200).json({ 
+        message: "CORS is working",
+        origin: req.headers.origin,
+        timestamp: new Date().toISOString()
+    });
+});
+
+// Test POST endpoint for CORS
+app.post("/api/cors-test", (req, res) => {
+    res.status(200).json({ 
+        message: "CORS POST is working",
+        origin: req.headers.origin,
+        body: req.body,
+        timestamp: new Date().toISOString()
     });
 });
 

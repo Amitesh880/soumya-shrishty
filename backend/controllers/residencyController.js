@@ -1,6 +1,12 @@
 import { prisma } from "../config/prismaConfig.js";
 import asyncHandler from "express-async-handler";
-import residencyData from "../data/Residency.json" assert { type: "json" };
+import { readFileSync } from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const residencyData = JSON.parse(readFileSync(join(__dirname, '../data/Residency.json'), 'utf8'));
 
 // Helper function to transform JSON data to frontend format
 const transformResidencyData = (data) => {
