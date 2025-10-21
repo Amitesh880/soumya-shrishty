@@ -95,6 +95,54 @@ app.get("/api/debug/env", (req, res) => {
     });
 });
 
+// Database seeding endpoint (for development only)
+app.post("/api/seed-database", async (req, res) => {
+    try {
+        if (process.env.NODE_ENV === 'production') {
+            return res.status(403).json({
+                success: false,
+                message: "Database seeding is not allowed in production"
+            });
+        }
+
+        const residencyData = await import("../data/Residency.json", { assert: { type: "json" } });
+        
+        // Transform and insert data
+        const transformedData = residencyData.default.map(item => ({
+            title: item.title,
+            description: item.description,
+            price: item.price,
+            address: item.address,
+            city: item.city,
+            country: item.country,
+            image: item.image,
+            facilities: item.facilities || { bedrooms: 2, bathrooms: 2, parkings: 1 }
+        }));
+
+        // Clear existing data
+        await prisma.residency.deleteMany();
+        
+        // Insert new data
+        const result = await prisma.residency.createMany({
+            data: transformedData
+        });
+
+        res.status(200).json({
+            success: true,
+            message: "Database seeded successfully",
+            insertedCount: result.count,
+            timestamp: new Date().toISOString()
+        });
+    } catch (error) {
+        console.error("Error seeding database:", error);
+        res.status(500).json({
+            success: false,
+            message: "Failed to seed database",
+            error: error.message
+        });
+    }
+});
+
 // Database health check
 app.get("/api/health/db", async (req, res) => {
     try {

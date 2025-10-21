@@ -1,5 +1,23 @@
 import { prisma } from "../config/prismaConfig.js";
-import asyncHandler from "express-async-handler"
+import asyncHandler from "express-async-handler";
+import residencyData from "../data/Residency.json" assert { type: "json" };
+
+// Helper function to transform JSON data to frontend format
+const transformResidencyData = (data) => {
+    return data.map(item => ({
+        id: item._id?.$oid || item._id || `fallback-${Math.random().toString(36).substr(2, 9)}`,
+        title: item.title,
+        description: item.description,
+        price: item.price,
+        address: item.address,
+        city: item.city,
+        country: item.country,
+        image: item.image,
+        facilities: item.facilities || { bedrooms: 2, bathrooms: 2, parkings: 1 },
+        createdAt: item.createdAt?.$date ? new Date(item.createdAt.$date) : new Date(),
+        updatedAt: item.updatedAt?.$date ? new Date(item.updatedAt.$date) : new Date()
+    }));
+};
 
 export const createResidency=asyncHandler(async(req,res)=>{
     console.log("Creating residency with data:", req.body);
@@ -66,24 +84,12 @@ export const createResidency=asyncHandler(async(req,res)=>{
         if (!process.env.DATABASE_URL) {
             console.log("❌ DATABASE_URL environment variable is not set!");
             console.log("Available environment variables:", Object.keys(process.env).filter(key => key.includes('DATABASE') || key.includes('MONGO')));
+            console.log("📄 Using data from Residency.json file");
             
-            // Return sample data when DATABASE_URL is not set
-            const sampleData = [
-                {
-                    id: "sample-1",
-                    title: "Sample Property 1 (No Database URL)",
-                    description: "This is a sample property because DATABASE_URL is not set in environment variables",
-                    price: 2000,
-                    address: "123 Sample Street",
-                    city: "Sample City",
-                    country: "Sample Country",
-                    image: "https://images.unsplash.com/photo-1584738766473-61c083514bf4?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-                    facilities: { bedrooms: 2, bathrooms: 2, parkings: 1 },
-                    createdAt: new Date(),
-                    updatedAt: new Date()
-                }
-            ];
-            return res.status(200).json(sampleData);
+            // Return data from JSON file when DATABASE_URL is not set
+            const jsonData = transformResidencyData(residencyData);
+            console.log(`✅ Returning ${jsonData.length} properties from JSON file`);
+            return res.status(200).json(jsonData);
         }
         
         // Test database connection first
@@ -108,25 +114,12 @@ export const createResidency=asyncHandler(async(req,res)=>{
             });
         }
         
-        // If no residencies found, return sample data
+        // If no residencies found, return data from JSON file
         if (residencies.length === 0) {
-            console.log("⚠️ No residencies found in database, returning sample data");
-            const sampleData = [
-                {
-                    id: "sample-1",
-                    title: "Sample Property 1 (Empty Database)",
-                    description: "This is a sample property because the database is empty",
-                    price: 2000,
-                    address: "123 Sample Street",
-                    city: "Sample City",
-                    country: "Sample Country",
-                    image: "https://images.unsplash.com/photo-1584738766473-61c083514bf4?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-                    facilities: { bedrooms: 2, bathrooms: 2, parkings: 1 },
-                    createdAt: new Date(),
-                    updatedAt: new Date()
-                }
-            ];
-            return res.status(200).json(sampleData);
+            console.log("⚠️ No residencies found in database, using data from Residency.json file");
+            const jsonData = transformResidencyData(residencyData);
+            console.log(`✅ Returning ${jsonData.length} properties from JSON file`);
+            return res.status(200).json(jsonData);
         }
         
         console.log("✅ Returning", residencies.length, "residencies from database");
@@ -137,23 +130,11 @@ export const createResidency=asyncHandler(async(req,res)=>{
         console.error("Error stack:", error.stack);
         console.error("Database URL available:", !!process.env.DATABASE_URL);
         
-        // Return sample data on error to prevent frontend crashes
-        const sampleData = [
-            {
-                id: "sample-1",
-                title: "Sample Property 1 (Database Error)",
-                description: "This is a sample property because there was a database error: " + error.message,
-                price: 2000,
-                address: "123 Sample Street",
-                city: "Sample City",
-                country: "Sample Country",
-                image: "https://images.unsplash.com/photo-1584738766473-61c083514bf4?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-                facilities: { bedrooms: 2, bathrooms: 2, parkings: 1 },
-                createdAt: new Date(),
-                updatedAt: new Date()
-            }
-        ];
-        res.status(200).json(sampleData);
+        // Return data from JSON file on error to prevent frontend crashes
+        console.log("📄 Using data from Residency.json file due to database error");
+        const jsonData = transformResidencyData(residencyData);
+        console.log(`✅ Returning ${jsonData.length} properties from JSON file`);
+        res.status(200).json(jsonData);
     }
 })
 
@@ -164,23 +145,22 @@ export const getResidency=asyncHandler(async(req,res)=>{
     console.log("Residency ID:", id);
 
     try{
-        // Handle sample data case
-        if (id === "sample-1") {
-            console.log("Returning sample data for ID:", id);
-            const sampleData = {
-                id: "sample-1",
-                title: "Sample Property 1",
-                description: "This is a sample property for testing",
-                price: 2000,
-                address: "123 Sample Street",
-                city: "Sample City",
-                country: "Sample Country",
-                image: "https://images.unsplash.com/photo-1584738766473-61c083514bf4?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-                facilities: { bedrooms: 2, bathrooms: 2, parkings: 1 },
-                createdAt: new Date(),
-                updatedAt: new Date()
-            };
-            return res.status(200).json(sampleData);
+        // Handle JSON data case - check if ID exists in JSON data first
+        const jsonData = transformResidencyData(residencyData);
+        const jsonProperty = jsonData.find(property => property.id === id);
+        
+        if (jsonProperty) {
+            console.log("Returning property from JSON data for ID:", id);
+            return res.status(200).json(jsonProperty);
+        }
+
+        // Check if DATABASE_URL is set
+        if (!process.env.DATABASE_URL) {
+            console.log("❌ DATABASE_URL environment variable is not set!");
+            return res.status(404).json({
+                success: false,
+                message: "Property not found in JSON data and DATABASE_URL is not set"
+            });
         }
 
         const residency=await prisma.residency.findUnique({where :{ id }})
