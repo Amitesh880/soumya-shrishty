@@ -4,7 +4,7 @@ import { toast } from "react-toastify"
 
 export const api = axios.create({
     baseURL: "https://real-estate-backend-nine-opal.vercel.app/api",
-    withCredentials: true,
+    credentials: true,
     headers: {
         'Content-Type': 'application/json'
     }
