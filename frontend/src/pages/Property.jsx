@@ -51,6 +51,15 @@ const Property = () => {
     );
   }
 
+  if (isError || !data) {
+    return (
+      <div className="h-64 flex flex-col justify-center items-center">
+        <span className="text-red-500 text-lg">Failed to load property</span>
+        <span className="text-gray-500 text-sm mt-2">Please try again later</span>
+      </div>
+    );
+  }
+
   const handleBookVisitClick = () => {
     if (isLoading) return;
     if (validateLogin()) {
@@ -80,8 +89,8 @@ const Property = () => {
           </p>
 
           <div className="flex justify-between pt-3">
-            <h4 className="font-bold text-[20px]">{data.title}</h4>
-            <div className="font-bold text-[20px]">${data.price}.00</div>
+            <h4 className="font-bold text-[20px]">{data?.title || "Property Title"}</h4>
+            <div className="font-bold text-[20px]">${data?.price || 0}.00</div>
           </div>
 
           <div className="flex justify-between py-1">
@@ -94,13 +103,13 @@ const Property = () => {
 
           <div className="flex gap-x-4">
             <div className="flex gap-x-2 border-r pr-4 font-[500]">
-              <MdOutlineBed />{data?.facilities.bedrooms}
+              <MdOutlineBed />{data?.facilities?.bedrooms || 0}
             </div>
             <div className="flex gap-x-2 border-r pr-4 font-[500]">
-              <MdOutlineBathtub />{data?.facilities.bathrooms}
+              <MdOutlineBathtub />{data?.facilities?.bathrooms || 0}
             </div>
             <div className="flex gap-x-2 border-r pr-4 font-[500]">
-              <MdOutlineGarage />{data?.facilities.parkings}
+              <MdOutlineGarage />{data?.facilities?.parkings || 0}
             </div>
             <div className="flex gap-x-2 border-r pr-4 font-[500]">
               <CgRuler />400

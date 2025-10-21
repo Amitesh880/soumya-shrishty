@@ -49,15 +49,31 @@ export const getAllProperties = async (token) => {
 
 export const getProperty = async (id) => {
     try {
+        console.log("🔍 Fetching property with ID:", id);
+        
         const response = await api.get(`/residency/${id}`, {
             timeout: 10 * 1000,
         })
+        
+        console.log("✅ Property response received:", {
+            status: response.status,
+            hasData: !!response.data,
+            title: response.data?.title || "No title"
+        });
+        
         if (response.status === 400 || response.status === 500) {
             throw response.data
         }
+        
+        if (!response.data) {
+            throw new Error("No property data received");
+        }
+        
         return response.data
     } catch (error) {
-        toast.error("Something went wrong")
+        console.error("❌ Error fetching property:", error);
+        console.error("Error details:", error.response?.data || error.message);
+        toast.error("Failed to load property details")
         throw error
     }
 }

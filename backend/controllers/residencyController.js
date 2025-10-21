@@ -132,12 +132,50 @@ export const createResidency=asyncHandler(async(req,res)=>{
 
 export const getResidency=asyncHandler(async(req,res)=>{
     const { id }=req.params;
+    
+    console.log("=== FETCHING SINGLE RESIDENCY ===");
+    console.log("Residency ID:", id);
 
     try{
+        // Handle sample data case
+        if (id === "sample-1") {
+            console.log("Returning sample data for ID:", id);
+            const sampleData = {
+                id: "sample-1",
+                title: "Sample Property 1",
+                description: "This is a sample property for testing",
+                price: 2000,
+                address: "123 Sample Street",
+                city: "Sample City",
+                country: "Sample Country",
+                image: "https://images.unsplash.com/photo-1584738766473-61c083514bf4?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                facilities: { bedrooms: 2, bathrooms: 2, parkings: 1 },
+                createdAt: new Date(),
+                updatedAt: new Date()
+            };
+            return res.status(200).json(sampleData);
+        }
+
         const residency=await prisma.residency.findUnique({where :{ id }})
-        res.send(residency)
+        
+        if (!residency) {
+            console.log("❌ Residency not found for ID:", id);
+            return res.status(404).json({
+                success: false,
+                message: "Residency not found"
+            });
+        }
+        
+        console.log("✅ Residency found:", residency.title);
+        res.status(200).json(residency);
     }catch(err){
-        console.log(err)
-        throw new Error(err.message)
+        console.error("❌ Error fetching residency:", err);
+        console.error("Error details:", err.message);
+        
+        return res.status(500).json({
+            success: false,
+            message: "Failed to fetch residency",
+            error: err.message
+        });
     }
 })
