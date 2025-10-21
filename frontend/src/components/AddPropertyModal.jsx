@@ -2,14 +2,14 @@ import React, { useState } from 'react'
 import { Stepper } from '@mantine/core'
 import { Container,Modal } from '@mantine/core'
 import AddLocation from './AddLocation'
-import {useAuth0} from "@auth0/auth0-react"
+import {useAuth} from "../context/AuthContext"
 import UploadImage from './UploadImage'
 import BasicDetails from './BasicDetails'
 import Facilities from './Facilities'
 
 const AddPropertyModal = ({ opened, setOpened }) => {
     const [active, setActive] = useState(0)
-    const {user} = useAuth0()
+    const {user} = useAuth()
     const [propertyDetails, setPropertyDetails] = useState({
         title:"",
         description:"",

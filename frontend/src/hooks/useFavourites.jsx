@@ -1,5 +1,5 @@
 import React , {useEffect, useRef} from 'react'
-import { useAuth0 } from '@auth0/auth0-react'
+import { useAuth } from '../context/AuthContext'
 import { useQuery, useMutation, useQueryClient } from 'react-query'
 import { getAllFav} from '../utils/api'
 import UserDetailContext from '../context/UserDetailContext'
@@ -8,7 +8,7 @@ import { useContext } from 'react'
 const useFavourites = () => {
     const {userDetails,setUserDetails} =useContext(UserDetailContext)
     const queryRef = useRef()
-    const {user } = useAuth0()
+    const {user } = useAuth()
 
     const {data,isLoading,isError,refetch} = useQuery({
         queryKey:"allFavourites",

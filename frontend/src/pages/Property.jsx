@@ -13,7 +13,7 @@ import {
 import { CgRuler } from "react-icons/cg";
 import Map from "../components/Map";
 import useAuthCheck from "../hooks/useAuthCheck";
-import { useAuth0 } from "@auth0/auth0-react";
+import { useAuth } from "../context/AuthContext";
 import BookingModal from "../components/BookingModal";
 import UserDetailContext from "../context/UserDetailContext";
 import { toast } from "react-toastify";
@@ -25,7 +25,7 @@ const Property = () => {
   const { validateLogin } = useAuthCheck();
   const { pathname } = useLocation();
   const id = pathname.split("/").slice(-1)[0];
-  const { user } = useAuth0();
+  const { user } = useAuth();
   const { data, isError, isLoading } = useQuery(["resd", id], () => getProperty(id));
   const {
     userDetails: { token, bookings },

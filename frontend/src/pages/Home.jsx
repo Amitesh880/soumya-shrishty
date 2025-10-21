@@ -5,11 +5,11 @@ import Achievements from '../components/Achievements'
 import Properties from '../components/Properties'
 import About from '../components/About'
 import Testimonals from '../components/Testimonals'
-import { useAuth0 } from '@auth0/auth0-react'
+import { useAuth } from '../context/AuthContext'
 
 const Home = () => {
 
-  const {loginWithRedirect, isAuthenticated,user ,logout}= useAuth0()
+  const {isAuthenticated, user, logout} = useAuth()
 
 
 

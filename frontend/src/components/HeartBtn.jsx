@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useState } from "react";
 import useAuthCheck from "../hooks/useAuthCheck";
 import { FaHeart } from "react-icons/fa";
-import { useAuth0 } from "@auth0/auth0-react";
+import { useAuth } from "../context/AuthContext";
 import { useContext } from "react";
 import UserDetailContext from "../context/UserDetailContext";
 import { useMutation } from "react-query";
@@ -12,7 +12,7 @@ import { checkFavourites, updateFavourites } from "../utils/common";
 export const HeartBtn = ({id}) => {
     const [heartColor,setHeartColor]=useState("white")
     const {validateLogin}=useAuthCheck()
-    const {user}=useAuth0();
+    const {user}=useAuth();
   const {
     userDetails: { token, Favourites },
     setUserDetails,

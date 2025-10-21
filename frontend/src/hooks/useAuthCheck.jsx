@@ -1,12 +1,12 @@
 
-import { useAuth0 } from "@auth0/auth0-react";
+import { useAuth } from "../context/AuthContext";
 import { toast } from "react-toastify";
-
+import { useNavigate } from "react-router-dom";
 
 const useAuthCheck = () => {
-  const { isAuthenticated, isLoading, loginWithRedirect } = useAuth0();
+  const { isAuthenticated, isLoading } = useAuth();
+  const navigate = useNavigate();
 
-  
   const validateLogin = (onSuccess) => {
     if (isLoading) return false;
 
@@ -17,7 +17,7 @@ const useAuthCheck = () => {
         });
       }, 100);
 
-      loginWithRedirect();
+      navigate("/login");
       return false;
     }
 
