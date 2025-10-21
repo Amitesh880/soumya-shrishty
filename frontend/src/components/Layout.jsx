@@ -14,7 +14,7 @@ const Layout = () => {
   useFavourites()
   useBookings()
 
-  const {isAuthenticated,user, getAccessTokenSilently, getAccessTokenWithPopup} = useAuth0();
+  const {isAuthenticated,user, getAccessTokenSilently, getAccessTokenWithPopup, loginWithRedirect} = useAuth0();
   const {setUserDetails} = useContext(UserDetailContext);
   const {mutate} = useMutation({
     mutationKey:[user?.email],
@@ -28,13 +28,22 @@ const Layout = () => {
         return;
       }
       
+      // First, try to get token from localStorage if it exists
+      const existingToken = localStorage.getItem("access_token");
+      if (existingToken && existingToken.length > 0) {
+        console.log("Using existing token from localStorage");
+        setUserDetails((prev)=>({...prev,token:existingToken}))
+        return;
+      }
+      
       try {
         console.log("Attempting to get access token silently...");
         const res = await getAccessTokenSilently({
           authorizationParams:{
-            audience:"https://real-estate-backend-nine-opal.vercel.app",
+            audience:"http://localhost:3000", // Temporarily using localhost until Auth0 is updated
             scope:"openid profile email"
-          }
+          },
+          timeout: 10000 // 10 second timeout
         })
         console.log("Access token retrieved:", res ? "Success" : "Failed");
         console.log("Token value:", res);
@@ -47,15 +56,26 @@ const Layout = () => {
           mutate(res)
         } else {
           console.error("Invalid token received:", res);
+          // If token is invalid, redirect to login
+          console.log("Redirecting to login due to invalid token");
+          loginWithRedirect();
         }
       } catch (error) {
         console.error("Error getting access token:", error);
-        // If silent token retrieval fails, try with popup as fallback
+        
+        // If it's a timeout or authentication error, redirect to login
+        if (error.message.includes('Timeout') || error.message.includes('authentication')) {
+          console.log("Authentication timeout or error, redirecting to login");
+          loginWithRedirect();
+          return;
+        }
+        
+        // For other errors, try popup as fallback
         try {
           console.log("Attempting to get access token via popup...");
           const res = await getAccessTokenWithPopup({
             authorizationParams:{
-              audience:"https://real-estate-backend-nine-opal.vercel.app",
+              audience:"http://localhost:3000", // Temporarily using localhost until Auth0 is updated
               scope:"openid profile email"
             }
           })
@@ -69,9 +89,13 @@ const Layout = () => {
             mutate(res)
           } else {
             console.error("Invalid popup token received:", res);
+            console.log("Redirecting to login due to invalid popup token");
+            loginWithRedirect();
           }
         } catch (popupError) {
           console.error("Error getting access token via popup:", popupError);
+          console.log("All authentication methods failed, redirecting to login");
+          loginWithRedirect();
         }
       }
     }
