@@ -33,7 +33,8 @@ export const createResidency=asyncHandler(async(req,res)=>{
 
  export const getAllResidencies=asyncHandler(async(req,res)=>{
     try {
-        console.log("Fetching all residencies...");
+        console.log("Fetching all residencies from MongoDB...");
+        console.log("Database URL:", process.env.DATABASE_URL ? "Set in environment" : "Not set in environment");
         
         // Test database connection first
         await prisma.$connect();
@@ -44,11 +45,16 @@ export const createResidency=asyncHandler(async(req,res)=>{
                 createdAt:"desc"
             }
         })
-        console.log(`Found ${residencies.length} residencies`);
+        console.log(`Found ${residencies.length} residencies from database`);
+        
+        // Log first residency for debugging
+        if (residencies.length > 0) {
+            console.log("First residency:", JSON.stringify(residencies[0], null, 2));
+        }
         
         // If no residencies found, return sample data
         if (residencies.length === 0) {
-            console.log("No residencies found, returning sample data");
+            console.log("No residencies found in database, returning sample data");
             const sampleData = [
                 {
                     id: "sample-1",
@@ -67,9 +73,11 @@ export const createResidency=asyncHandler(async(req,res)=>{
             return res.status(200).json(sampleData);
         }
         
+        console.log("Returning", residencies.length, "residencies from database");
         res.status(200).json(residencies);
     } catch (error) {
         console.error("Error fetching residencies:", error);
+        console.error("Error details:", error.message);
         
         // Return sample data on error to prevent frontend crashes
         const sampleData = [

@@ -48,15 +48,19 @@ app.get("/health", (req, res) => {
 app.get("/api/health/db", async (req, res) => {
     try {
         await prisma.$connect();
+        const residencyCount = await prisma.residency.count();
         res.status(200).json({ 
             status: "ok", 
             database: "connected",
+            database_url: process.env.DATABASE_URL ? "Set in environment" : "Not set in environment",
+            residency_count: residencyCount,
             timestamp: new Date().toISOString()
         });
     } catch (error) {
         res.status(500).json({ 
             status: "error", 
             database: "disconnected",
+            database_url: process.env.DATABASE_URL ? "Set in environment" : "Not set in environment",
             error: error.message,
             timestamp: new Date().toISOString()
         });
