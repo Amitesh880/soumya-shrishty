@@ -2,10 +2,5 @@
 # *.env
 
 
-
-
-# node_modules
-.kluster
-
-
 .github/instructions/kluster-code-verify.instructions.md
+.kluster
