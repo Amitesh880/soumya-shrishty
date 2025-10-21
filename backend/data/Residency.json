@@ -1,5 +1,19 @@
 [
   {
+    "_id": "mock-1",
+    "title": "Mock Property for Testing",
+    "description": "This is a mock property created for testing purposes. It has all the necessary features and amenities for demonstration.",
+    "price": 2500,
+    "address": "123 Test Street",
+    "city": "Test City",
+    "country": "Test Country",
+    "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "userEmail": "test@example.com",
+    "createdAt": { "$date": "2024-04-01T10:00:00.000Z" },
+    "updatedAt": { "$date": "2024-04-01T10:00:00.000Z" },
+    "facilities": { "bedrooms": 3, "bathrooms": 2, "parkings": 1 }
+  },
+  {
     "_id": { "$oid": "64392d39dfd90fb29e464fb7" },
     "title": "Tranquil Terrace Tranquility Haven",
     "description": "This villa is a stunning masterpiece of luxury and art. Adorned with two helipads for convenient aerial access, the expansive interiors provide ample space for relaxation and entertainment. The villa offers panoramic sea views that can be enjoyed from multiple vantage points, while the walls are graced with astonishing, bold artworks that add a touch of sophistication and elegance to the entire property. Every detail of this villa exudes opulence and grandeur, making it a truly exceptional and unique residence",
