@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "name": "node-js",
+  "name": "real-estate-backend",
   "builds": [
     {
       "src": "index.js",
@@ -12,5 +12,8 @@
       "src": "/(.*)",
       "dest": "/index.js"
     }
-  ]
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  }
 }
