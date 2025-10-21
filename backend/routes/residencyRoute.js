@@ -1,8 +1,8 @@
 import express from "express";
 import { createResidency, getAllResidencies, getResidency } from "../controllers/residencyController.js";
-import jwtcheck from "../config/auth0Config.js";
+import { verifyToken } from "../controllers/authController.js";
 const router=express.Router();
-router.post("/create",jwtcheck,createResidency)
+router.post("/create",verifyToken,createResidency)
 router.get("/allresd",getAllResidencies)
 router.get("/:id",getResidency)
 

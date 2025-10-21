@@ -17,22 +17,22 @@ export const createUser = asyncHandler(async (req, res) => {
 })
 
 export const bookVisit = asyncHandler(async (req, res) => {
-  const email = req.auth?.email;
+  const userId = req.userId;
   const { date } = req.body;
   const { id } = req.params;
 
   try {
-    const alreadyBooked = await prisma.user.findUnique({
-      where: { email },
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
       select: { bookedVisits: true }
     });
 
-    if (alreadyBooked.bookedVisits.some((visit) => visit.id === id)) {
+    if (user.bookedVisits.some((visit) => visit.id === id)) {
       return res.status(400).json({ message: "This residency is already booked by you" });
     }
 
     await prisma.user.update({
-      where: { email },
+      where: { id: userId },
       data: {
         bookedVisits: { push: { id, date } }
       }
@@ -45,10 +45,10 @@ export const bookVisit = asyncHandler(async (req, res) => {
 });
 
 export const allBookings = asyncHandler(async (req, res) => {
-    const email = req.body
+    const userId = req.userId
     try {
         const bookings = await prisma.user.findUnique({
-            where: { email },
+            where: { id: userId },
             select: { bookedVisits: true }
         })
 
@@ -59,11 +59,11 @@ export const allBookings = asyncHandler(async (req, res) => {
 })
 
 export const cancelBooking = asyncHandler(async (req, res) => {
-    const email = req.auth?.email
+    const userId = req.userId
     const { id } = req.params
     try {
         const user = await prisma.user.findUnique({
-            where: { email },
+            where: { id: userId },
             select: { bookedVisits: true }
         })
         const index = user.bookedVisits.findIndex((visit) => visit.id === id)
@@ -72,7 +72,7 @@ export const cancelBooking = asyncHandler(async (req, res) => {
         } else {
             user.bookedVisits.splice(index, 1)
             await prisma.user.update({
-                where: { email },
+                where: { id: userId },
                 data: {
                     bookedVisits: user.bookedVisits
                 }
@@ -85,15 +85,15 @@ export const cancelBooking = asyncHandler(async (req, res) => {
 })
 
 export const toFav = asyncHandler(async (req, res) => {
-    const email = req.auth?.email
+    const userId = req.userId
     const { rid } = req.params
     try {
         const user = await prisma.user.findUnique({
-            where: { email }
+            where: { id: userId }
         })
         if (user.favResidenciesID.includes(rid)) {
             const updateUser = await prisma.user.update({
-                where: { email },
+                where: { id: userId },
                 data: {
                     favResidenciesID: {
                         set: user.favResidenciesID.filter((id) => id !== rid)
@@ -103,7 +103,7 @@ export const toFav = asyncHandler(async (req, res) => {
             res.send({ message: "Removed from Favourite", user: updateUser })
         } else {
             const updateUser = await prisma.user.update({
-                where: { email },
+                where: { id: userId },
                 data: {
                     favResidenciesID: {
                         push: rid
@@ -120,10 +120,10 @@ export const toFav = asyncHandler(async (req, res) => {
 
 
 export const getAllFav=asyncHandler(async(req,res)=>{
-    const email = req.auth?.email
+    const userId = req.userId
     try{
         const favResd=await prisma.user.findUnique({
-            where: { email },
+            where: { id: userId },
             select: { favResidenciesID:true}
         })
         res.status(200).send(favResd)

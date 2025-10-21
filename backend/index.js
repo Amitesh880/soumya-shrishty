@@ -4,6 +4,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import { userRoute } from "./routes/userRoute.js";
 import { residencyRoute } from "./routes/residencyRoute.js";
+import { authRoute } from "./routes/authRoute.js";
 
 dotenv.config();
 const app = express();
@@ -24,6 +25,7 @@ app.use(cookieParser());
 app.use(cors(corsOptions));
 
 // Routes
+app.use("/api/auth", authRoute);
 app.use("/api/user", userRoute);
 app.use("/api/residency", residencyRoute);
 

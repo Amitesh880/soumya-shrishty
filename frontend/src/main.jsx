@@ -2,20 +2,15 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
-import { Auth0Provider } from '@auth0/auth0-react'
 import { MantineProvider } from '@mantine/core'
 import "@mantine/core/styles.css";
 import "@mantine/dates/styles.css";
 import 'leaflet/dist/leaflet.css';
 
 createRoot(document.getElementById('root')).render(
-    <Auth0Provider domain="dev-1u7ju166q720ebc3.us.auth0.com" clientId="gJvpPSYZ7jOP3jCMfrDaEVs037YpH4Xe" authorizationParams={{ redirect_uri:"https://real-estate-project-henna-seven.vercel.app"}}
-    audience="https://real-estate-backend-nine-opal.vercel.app"
-    scope="openid profile email"
-    >
+    <StrictMode>
         <MantineProvider withGlobalStyles withNormalizeCSS>
             <App />
         </MantineProvider>
-    </Auth0Provider>
-
+    </StrictMode>
 )
