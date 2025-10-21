@@ -4,7 +4,7 @@ import jwtcheck from "../config/auth0Config.js";
 
 const router=express.Router();
 
-router.post("/register",jwtcheck,createUser)
+router.post("/register",createUser)
 router.post("/bookVisit/:id",jwtcheck,bookVisit)
 router.post("/allBookings",allBookings)
 router.post("/removeBooking/:id",jwtcheck,cancelBooking)
