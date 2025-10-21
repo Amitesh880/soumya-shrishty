@@ -1,29 +1,31 @@
+
 import { useAuth0 } from "@auth0/auth0-react";
 import { toast } from "react-toastify";
 
-const useAuthCheck = () => {
-  // 1. Get loginWithRedirect here
-  const { isAuthenticated, isLoading, loginWithRedirect } = useAuth0(); 
 
-  const validateLogin = () => {
+const useAuthCheck = () => {
+  const { isAuthenticated, isLoading, loginWithRedirect } = useAuth0();
+
+  
+  const validateLogin = (onSuccess) => {
     if (isLoading) return false;
 
     if (!isAuthenticated) {
-      // 2. Add the call to initiate the login process
-      loginWithRedirect(); 
-      
-      toast.error("You need to log in to continue", {
-        position: "bottom-right",
-      });
-      
-      // 3. Return false so the calling component knows to stop
-      return false; 
+      setTimeout(() => {
+        toast.error("You need to log in to continue", {
+          position: "bottom-right",
+        });
+      }, 100);
+
+      loginWithRedirect();
+      return false;
     }
 
+    if (onSuccess) onSuccess();
     return true;
   };
 
-  return { validateLogin };
+  return { validateLogin, isAuthenticated };
 };
 
 export default useAuthCheck;
