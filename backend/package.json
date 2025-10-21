@@ -11,7 +11,7 @@
     "start": "node index.js",
     "server": "nodemon index.js",
     "dev": "nodemon src/index.js",
-    "postinstall": "prisma generate"
+    "postinstall": "echo 'Skipping Prisma generate in postinstall'"
   },
   "dependencies": {
     "@prisma/client": "^6.16.2",
