@@ -74,6 +74,27 @@ app.get("/api/residency/test", async (req, res) => {
     }
 });
 
+// Environment variables debug endpoint
+app.get("/api/debug/env", (req, res) => {
+    const envVars = {
+        DATABASE_URL: process.env.DATABASE_URL ? "Set (first 20 chars: " + process.env.DATABASE_URL.substring(0, 20) + "...)" : "Not set",
+        NODE_ENV: process.env.NODE_ENV || "development",
+        PORT: process.env.PORT || "not set",
+        allEnvKeys: Object.keys(process.env).filter(key => 
+            key.includes('DATABASE') || 
+            key.includes('MONGO') || 
+            key.includes('DB') ||
+            key.includes('URL')
+        )
+    };
+    
+    res.status(200).json({
+        message: "Environment variables debug",
+        environment: envVars,
+        timestamp: new Date().toISOString()
+    });
+});
+
 // Database health check
 app.get("/api/health/db", async (req, res) => {
     try {

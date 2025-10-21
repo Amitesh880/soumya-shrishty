@@ -60,10 +60,36 @@ export const createResidency=asyncHandler(async(req,res)=>{
         console.log("=== FETCHING RESIDENCIES ===");
         console.log("Request headers:", req.headers);
         console.log("Database URL status:", process.env.DATABASE_URL ? "Set" : "Not set");
+        console.log("Environment:", process.env.NODE_ENV || "development");
+        
+        // Check if DATABASE_URL is set
+        if (!process.env.DATABASE_URL) {
+            console.log("❌ DATABASE_URL environment variable is not set!");
+            console.log("Available environment variables:", Object.keys(process.env).filter(key => key.includes('DATABASE') || key.includes('MONGO')));
+            
+            // Return sample data when DATABASE_URL is not set
+            const sampleData = [
+                {
+                    id: "sample-1",
+                    title: "Sample Property 1 (No Database URL)",
+                    description: "This is a sample property because DATABASE_URL is not set in environment variables",
+                    price: 2000,
+                    address: "123 Sample Street",
+                    city: "Sample City",
+                    country: "Sample Country",
+                    image: "https://images.unsplash.com/photo-1584738766473-61c083514bf4?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                    facilities: { bedrooms: 2, bathrooms: 2, parkings: 1 },
+                    createdAt: new Date(),
+                    updatedAt: new Date()
+                }
+            ];
+            return res.status(200).json(sampleData);
+        }
         
         // Test database connection first
         await prisma.$connect();
         console.log("✅ Database connected successfully");
+        console.log("Database URL (first 20 chars):", process.env.DATABASE_URL.substring(0, 20) + "...");
         
         const residencies=await prisma.residency.findMany({
             orderBy:{
@@ -88,8 +114,8 @@ export const createResidency=asyncHandler(async(req,res)=>{
             const sampleData = [
                 {
                     id: "sample-1",
-                    title: "Sample Property 1",
-                    description: "This is a sample property for testing",
+                    title: "Sample Property 1 (Empty Database)",
+                    description: "This is a sample property because the database is empty",
                     price: 2000,
                     address: "123 Sample Street",
                     city: "Sample City",
@@ -109,13 +135,14 @@ export const createResidency=asyncHandler(async(req,res)=>{
         console.error("❌ Error fetching residencies:", error);
         console.error("Error details:", error.message);
         console.error("Error stack:", error.stack);
+        console.error("Database URL available:", !!process.env.DATABASE_URL);
         
         // Return sample data on error to prevent frontend crashes
         const sampleData = [
             {
                 id: "sample-1",
-                title: "Sample Property 1",
-                description: "This is a sample property for testing",
+                title: "Sample Property 1 (Database Error)",
+                description: "This is a sample property because there was a database error: " + error.message,
                 price: 2000,
                 address: "123 Sample Street",
                 city: "Sample City",
