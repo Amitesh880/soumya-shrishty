@@ -1,4 +1,12 @@
 import { PrismaClient } from "@prisma/client";
+import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
+
+// Ensure dotenv is configured properly
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 console.log("Initializing Prisma client...");
 console.log("DATABASE_URL:", process.env.DATABASE_URL ? "Set" : "Not set");
