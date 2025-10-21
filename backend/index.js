@@ -60,7 +60,7 @@ app.get("/health", (req, res) => {
 // Simple test endpoint for listing
 app.get("/api/test", (req, res) => {
     res.status(200).json({ 
-        message: "Backend is working",
+        message: "Backend is working - CORS Fixed!",
         timestamp: new Date().toISOString(),
         environment: process.env.NODE_ENV || "development"
     });
