@@ -103,14 +103,9 @@ const Property = () => {
 
           <div className="flex gap-x-4">
             <div className="flex gap-x-2 border-r pr-4 font-[500]">
-              <MdOutlineBed />{data?.facilities?.bedrooms || 0}
+              <MdOutlineBed />{data?.facilities?.area || 0}
             </div>
-            <div className="flex gap-x-2 border-r pr-4 font-[500]">
-              <MdOutlineBathtub />{data?.facilities?.bathrooms || 0}
-            </div>
-            <div className="flex gap-x-2 border-r pr-4 font-[500]">
-              <MdOutlineGarage />{data?.facilities?.parkings || 0}
-            </div>
+            
             <div className="flex gap-x-2 border-r pr-4 font-[500]">
               <CgRuler />400
             </div>
