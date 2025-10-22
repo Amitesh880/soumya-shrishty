@@ -83,7 +83,7 @@ export const createResidency=asyncHandler(async(req,res)=>{
      try {
          await prisma.$connect();
          const rawResidencies = await prisma.residency.findRaw({
-             filter: { ownerId: { $ne: null } }
+             filter: {}
          });
      
          const normalizeObjectId = (val) => {
@@ -107,7 +107,6 @@ export const createResidency=asyncHandler(async(req,res)=>{
              country: doc.country,
              image: doc.image,
              facilities: doc.facilities || {},
-             ownerId: normalizeObjectId(doc.ownerId),
              createdAt: doc.createdAt ? new Date(doc.createdAt) : undefined,
              updatedAt: doc.updatedAt ? new Date(doc.updatedAt) : undefined,
          }));
