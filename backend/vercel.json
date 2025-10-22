@@ -4,10 +4,7 @@
   "buildCommand": "npm install && npx prisma generate",
   "functions": {
     "index.js": {
-      "includeFiles": [
-        "node_modules/.prisma/client/**",
-        "node_modules/@prisma/client/**"
-      ]
+      "includeFiles": "node_modules/.prisma/client/**"
     }
   },
   "builds": [
