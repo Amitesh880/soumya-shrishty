@@ -1,6 +1,7 @@
 {
   "version": 2,
   "name": "real-estate-backend",
+  "buildCommand": "npm install && npx prisma generate",
   "builds": [
     {
       "src": "index.js",
