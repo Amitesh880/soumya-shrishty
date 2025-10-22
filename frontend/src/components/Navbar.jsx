@@ -1,17 +1,19 @@
 import React,{useState} from 'react'
 import { NavLink } from 'react-router-dom'
-import AddPropertyModal from './AddPropertyModal'
-import useAuthCheck from '../hooks/useAuthCheck'
+// Removed AddPropertyModal and related imports
+// import AddPropertyModal from './AddPropertyModal'
+// import useAuthCheck from '../hooks/useAuthCheck'
 
 const Navbar = ({containerStyles}) => {
-  const [modalOpened,setModalOpened]=useState(false)
-  const {validateLogin} = useAuthCheck()
+  // Removed state and auth check for Add Property modal
+  // const [modalOpened,setModalOpened]=useState(false)
+  // const {validateLogin} = useAuthCheck()
 
- const handleAddPropertyClick = ()=>{
-   if(validateLogin()){
-    setModalOpened(true)
-   }
- }
+ // const handleAddPropertyClick = ()=>{
+ //   if(validateLogin()){
+ //    setModalOpened(true)
+ //   }
+ // }
 
   return (
     <nav className={`${containerStyles}`}>
@@ -26,10 +28,11 @@ const Navbar = ({containerStyles}) => {
         Contact
 
         </NavLink>
-        <div onClick={handleAddPropertyClick} className={"py-1 cursor-pointer"} >
+        {/* Removed Add Property trigger */}
+        {/* <div onClick={handleAddPropertyClick} className={"py-1 cursor-pointer"} >
         Add Property
         </div>
-        <AddPropertyModal opened={modalOpened} setOpened={setModalOpened} />
+        <AddPropertyModal opened={modalOpened} setOpened={setModalOpened} /> */}
     </nav>
   )
 }
