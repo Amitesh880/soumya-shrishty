@@ -6,12 +6,16 @@
   "author": "",
   "type": "module",
   "main": "index.js",
+  "engines": {
+    "node": ">=16.x"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
     "server": "nodemon index.js",
     "dev": "nodemon src/index.js",
-    "postinstall":"npx prisma generate"
+    "build": "prisma generate && npm run start",
+    "vercel-build": "prisma generate"
   },
   "dependencies": {
     "@prisma/client": "^6.16.2",
