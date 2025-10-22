@@ -8,7 +8,6 @@ const app = express();
 // Define CORS options
 const corsOptions = {
     origin: [
-        "https://real-estate-project-henna-seven.vercel.app",
         "http://soumyasrishtyproperties.com",
         "https://soumyasrishtyproperties.com",
         "http://localhost:5173",
