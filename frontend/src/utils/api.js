@@ -3,7 +3,7 @@ import dayjs from "dayjs"
 import { toast } from "react-toastify"
 
 export const api = axios.create({
-    baseURL: "http://localhost:3000/api"||"https://soumya-shrishty-backend.vercel.app/api",
+    baseURL:"https://soumya-shrishty-backend.vercel.app/api",
     credentials: true,
     headers: {
         'Content-Type': 'application/json'
