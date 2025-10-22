@@ -7,7 +7,6 @@ import { FaStar } from "react-icons/fa";
 import {
   MdLocationOn,
   MdSquareFoot,
-  MdSquareFoot,
 } from "react-icons/md";
 import { CgRuler } from "react-icons/cg";
 import Map from "../components/Map";
