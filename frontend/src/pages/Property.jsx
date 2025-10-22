@@ -6,9 +6,8 @@ import { PuffLoader } from "react-spinners";
 import { FaStar } from "react-icons/fa";
 import {
   MdLocationOn,
-  MdOutlineBathtub,
-  MdOutlineBed,
-  MdOutlineGarage,
+  MdSquareFoot,
+  MdSquareFoot,
 } from "react-icons/md";
 import { CgRuler } from "react-icons/cg";
 import Map from "../components/Map";
@@ -103,7 +102,7 @@ const Property = () => {
 
           <div className="flex gap-x-4">
             <div className="flex gap-x-2 border-r pr-4 font-[500]">
-              <MdOutlineBed />{data?.facilities?.area || 0}
+              <MdSquareFoot />{data?.facilities?.area || 0}
             </div>
             
             <div className="flex gap-x-2 border-r pr-4 font-[500]">

@@ -1,7 +1,7 @@
 import React from 'react'
 import { CgRuler } from 'react-icons/cg'
 import { FaHeart } from 'react-icons/fa'
-import { MdOutlineBathtub, MdOutlineBed, MdOutlineGarage } from 'react-icons/md'
+import { MdSquareFoot } from 'react-icons/md'
 import { useNavigate } from 'react-router-dom'
 import HeartBtn from './HeartBtn'
 
@@ -23,13 +23,7 @@ const Item = ({property}) => {
             <h4 className='text-[18px] font-[500] line-clamp-1' >{property.title}</h4>
             <div className='flex gap-x-2 py-2'>
                 <div className='flex items-center justify-center gap-x-2 border-r border-slate-900/50 pr-4  font-[500]'>
-                <MdOutlineBed /> {property.facilities.bedrooms}
-                </div>
-                <div className='flex items-center justify-center gap-x-2 border-r border-slate-900/50 pr-4  font-[500]'>
-                <MdOutlineBathtub/> {property.facilities.bathrooms}
-                </div>
-                <div className='flex items-center justify-center gap-x-2 border-r border-slate-900/50 pr-4  font-[500]'>
-                <MdOutlineGarage /> {property.facilities.parkings}
+                <MdSquareFoot /> {property.facilities.area}
                 </div>
                 <div className='flex items-center justify-center gap-x-2 border-r border-slate-900/50  pr-4  font-[500]'>
                <CgRuler />400
