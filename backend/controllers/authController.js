@@ -15,6 +15,20 @@ const generateToken = (userId) => {
 export const register = asyncHandler(async (req, res) => {
   const { email, password, name } = req.body;
 
+  // Basic validations
+  if (!email || !password) {
+    return res.status(400).json({
+      success: false,
+      message: "Email and password are required"
+    });
+  }
+  if (typeof password !== "string" || password.length <= 6) {
+    return res.status(400).json({
+      success: false,
+      message: "Password must be longer than 6 characters"
+    });
+  }
+
   // Check if user already exists
   const existingUser = await prisma.user.findUnique({
     where: { email }
@@ -63,6 +77,20 @@ export const register = asyncHandler(async (req, res) => {
 // Login user
 export const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
+
+  // Basic validations
+  if (!email || !password) {
+    return res.status(400).json({
+      success: false,
+      message: "Email and password are required"
+    });
+  }
+  if (typeof password !== "string" || password.length <= 6) {
+    return res.status(400).json({
+      success: false,
+      message: "Password must be longer than 6 characters"
+    });
+  }
 
   // Find user
   const user = await prisma.user.findUnique({

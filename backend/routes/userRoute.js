@@ -10,6 +10,6 @@ router.post("/allBookings",verifyToken,allBookings)
 router.post("/removeBooking/:id",verifyToken,cancelBooking)
 router.post("/toFav/:rid",verifyToken,toFav)
 router.post("/allFav",verifyToken,getAllFav)
-//router.post("/contact",jwtcheck,getContact)
+
 
 export{router as userRoute}

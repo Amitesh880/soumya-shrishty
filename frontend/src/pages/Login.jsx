@@ -57,6 +57,14 @@ const Login = () => {
   };
 
   const handleRegister = async (values) => {
+    // Validate form before attempting registration
+    const { hasErrors } = form.validate();
+    if (hasErrors) {
+      setError('Please provide a valid email and a password of at least 6 characters');
+      toast.error('Please provide a valid email and a password of at least 6 characters');
+      return;
+    }
+
     setIsLoading(true);
     setError('');
 

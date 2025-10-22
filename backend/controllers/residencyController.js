@@ -1,12 +1,9 @@
 import { prisma } from "../config/prismaConfig.js";
 import asyncHandler from "express-async-handler";
-import { readFileSync } from 'fs';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+import fs from 'fs/promises'
+import path from 'path'
+import { fileURLToPath } from 'url'
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const residencyData = JSON.parse(readFileSync(join(__dirname, '../data/Residency.json'), 'utf8'));
 
 // Helper function to transform JSON data to frontend format
 const transformResidencyData = (data) => {
@@ -79,116 +76,98 @@ export const createResidency=asyncHandler(async(req,res)=>{
     
 })
 
+ const __filename = fileURLToPath(import.meta.url)
+ const __dirname = path.dirname(__filename)
+ const RESD_JSON_PATH = path.join(__dirname, '..', 'data', 'Residency.json')
  export const getAllResidencies=asyncHandler(async(req,res)=>{
-    try {
-        console.log("=== FETCHING RESIDENCIES ===");
-        console.log("Request headers:", req.headers);
-        console.log("Database URL status:", process.env.DATABASE_URL ? "Set" : "Not set");
-        console.log("Environment:", process.env.NODE_ENV || "development");
-        
-        // Check if DATABASE_URL is set
-        if (!process.env.DATABASE_URL) {
-            console.log("❌ DATABASE_URL environment variable is not set!");
-            console.log("Available environment variables:", Object.keys(process.env).filter(key => key.includes('DATABASE') || key.includes('MONGO')));
-            console.log("📄 Using data from Residency.json file");
-            
-            // Return data from JSON file when DATABASE_URL is not set
-            const jsonData = transformResidencyData(residencyData);
-            console.log(`✅ Returning ${jsonData.length} properties from JSON file`);
-            return res.status(200).json(jsonData);
-        }
-        
-        // Test database connection first
-        await prisma.$connect();
-        console.log("✅ Database connected successfully");
-        console.log("Database URL (first 20 chars):", process.env.DATABASE_URL.substring(0, 20) + "...");
-        
-        const residencies=await prisma.residency.findMany({
-            orderBy:{
-                createdAt:"desc"
-            }
-        })
-        console.log(`✅ Found ${residencies.length} residencies from database`);
-        
-        // Log first residency for debugging
-        if (residencies.length > 0) {
-            console.log("First residency sample:", {
-                id: residencies[0].id,
-                title: residencies[0].title,
-                price: residencies[0].price,
-                city: residencies[0].city
-            });
-        }
-        
-        // If no residencies found, return data from JSON file
-        if (residencies.length === 0) {
-            console.log("⚠️ No residencies found in database, using data from Residency.json file");
-            const jsonData = transformResidencyData(residencyData);
-            console.log(`✅ Returning ${jsonData.length} properties from JSON file`);
-            return res.status(200).json(jsonData);
-        }
-        
-        console.log("✅ Returning", residencies.length, "residencies from database");
-        res.status(200).json(residencies);
-    } catch (error) {
-        console.error("❌ Error fetching residencies:", error);
-        console.error("Error details:", error.message);
-        console.error("Error stack:", error.stack);
-        console.error("Database URL available:", !!process.env.DATABASE_URL);
-        
-        // Return data from JSON file on error to prevent frontend crashes
-        console.log("📄 Using data from Residency.json file due to database error");
-        const jsonData = transformResidencyData(residencyData);
-        console.log(`✅ Returning ${jsonData.length} properties from JSON file`);
-        res.status(200).json(jsonData);
-    }
-})
+     try {
+         await prisma.$connect();
+         const rawResidencies = await prisma.residency.findRaw({
+             filter: { ownerId: { $ne: null } }
+         });
+     
+         const normalizeObjectId = (val) => {
+             if (!val) return undefined;
+             if (typeof val === "string") return val;
+             if (typeof val === "object" && "$oid" in val) return val.$oid;
+             if (typeof val.toString === "function") {
+                 const str = val.toString();
+                 return str !== "[object Object]" ? str : undefined;
+             }
+             return undefined;
+         };
+     
+         const residencies = rawResidencies.map((doc) => ({
+             id: normalizeObjectId(doc._id),
+             title: doc.title,
+             description: doc.description,
+             price: doc.price,
+             address: doc.address,
+             city: doc.city,
+             country: doc.country,
+             image: doc.image,
+             facilities: doc.facilities || {},
+             ownerId: normalizeObjectId(doc.ownerId),
+             createdAt: doc.createdAt ? new Date(doc.createdAt) : undefined,
+             updatedAt: doc.updatedAt ? new Date(doc.updatedAt) : undefined,
+         }));
+     
+         res.status(200).json(residencies);
+     } catch (error) {
+         return res.status(500).json({
+             success: false,
+             message: "Failed to fetch residencies",
+             error: error.message
+         })
+     }
+ })
 
-export const getResidency=asyncHandler(async(req,res)=>{
-    const { id }=req.params;
-    
-    console.log("=== FETCHING SINGLE RESIDENCY ===");
-    console.log("Residency ID:", id);
-
-    try{
-        // Handle JSON data case - check if ID exists in JSON data first
-        const jsonData = transformResidencyData(residencyData);
-        const jsonProperty = jsonData.find(property => property.id === id);
-        
-        if (jsonProperty) {
-            console.log("Returning property from JSON data for ID:", id);
-            return res.status(200).json(jsonProperty);
-        }
-
-        // Check if DATABASE_URL is set
-        if (!process.env.DATABASE_URL) {
-            console.log("❌ DATABASE_URL environment variable is not set!");
-            return res.status(404).json({
-                success: false,
-                message: "Property not found in JSON data and DATABASE_URL is not set"
-            });
-        }
-
-        const residency=await prisma.residency.findUnique({where :{ id }})
-        
-        if (!residency) {
-            console.log("❌ Residency not found for ID:", id);
-            return res.status(404).json({
-                success: false,
-                message: "Residency not found"
-            });
-        }
-        
-        console.log("✅ Residency found:", residency.title);
-        res.status(200).json(residency);
-    }catch(err){
-        console.error("❌ Error fetching residency:", err);
-        console.error("Error details:", err.message);
-        
-        return res.status(500).json({
-            success: false,
-            message: "Failed to fetch residency",
-            error: err.message
-        });
-    }
-})
+ export const getResidency=asyncHandler(async(req,res)=>{
+     const { id } = req.params;
+ 
+     try {
+         await prisma.$connect();
+         const raw = await prisma.residency.findRaw({
+             filter: { _id: { $oid: String(id) } }
+         });
+ 
+         if (!Array.isArray(raw) || raw.length === 0) {
+             return res.status(404).json({ success: false, message: "Residency not found" });
+         }
+ 
+         const doc = raw[0];
+         const normalizeObjectId = (val) => {
+             if (!val) return undefined;
+             if (typeof val === "string") return val;
+             if (typeof val === "object" && "$oid" in val) return val.$oid;
+             if (typeof val.toString === "function") {
+                 const str = val.toString();
+                 return str !== "[object Object]" ? str : undefined;
+             }
+             return undefined;
+         };
+ 
+         const residency = {
+             id: normalizeObjectId(doc._id),
+             title: doc.title,
+             description: doc.description,
+             price: doc.price,
+             address: doc.address,
+             city: doc.city,
+             country: doc.country,
+             image: doc.image,
+             facilities: doc.facilities || {},
+             ownerId: normalizeObjectId(doc.ownerId),
+             createdAt: doc.createdAt ? new Date(doc.createdAt) : undefined,
+             updatedAt: doc.updatedAt ? new Date(doc.updatedAt) : undefined,
+         };
+ 
+         res.status(200).json(residency);
+     } catch (err) {
+         return res.status(500).json({
+             success: false,
+             message: "Failed to fetch residency",
+             error: err.message
+         })
+     }
+ })
