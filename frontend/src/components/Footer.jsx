@@ -17,7 +17,7 @@ const Footer = () => {
           <FaLocationDot />
           <div>
             <h5 className='text-[14px] md:text-[15px] mb-1 font-bold'>Location</h5>
-              <p>123,Avenue,Cl</p>
+              <p>Padri Bazar, Manas Vihar Colony, Gorakhpur, Uttar Pradesh 273014</p>
          
           </div>
         </div>
@@ -25,7 +25,7 @@ const Footer = () => {
           <FaPhone />
           <div>
             <h5 className='text-[14px] md:text-[15px] mb-1 font-bold'>Phone</h5>
-              <p>+0123456789</p>
+              <p>+918953375459</p>
          
           </div>
         </div>
@@ -33,7 +33,7 @@ const Footer = () => {
           <FaMailBulk />
           <div>
             <h5 className='text-[14px] md:text-[15px] mb-1 font-bold'>Email Support</h5>
-              <p>info@zenhomes.com</p>
+              <p>soumayaproperties@gmail.com</p>
          
           </div>
         </div>
@@ -54,31 +54,20 @@ const Footer = () => {
               <ul>
                 <h4 className='text-[16px] md:text-[17px]  font-bold mb-3'>Customer Service</h4>
                 <li className='my-2'><a href="" className='text-gray-30 text-[14px] font-[400] '>Help center</a></li>
-                <li className='my-2'><a href="" className='text-gray-30 text-[14px] font-[400] '>Payment methods</a></li>
                 <li className='my-2'><a href="" className='text-gray-30 text-[14px] font-[400] '>Contact</a></li>
-                <li className='my-2'><a href="" className='text-gray-30 text-[14px] font-[400] '>Shipping status</a></li>
-                <li className='my-2'><a href="" className='text-gray-30 text-[14px] font-[400] '>Complaints</a></li>
               </ul>
               <ul>
                 <h4 className='text-[16px] md:text-[17px]  font-bold mb-3'>Legal</h4>
                 <li className='my-2'><a href="" className='text-gray-30 text-[14px] font-[400] '>Privacy Policy</a></li>
-                <li className='my-2'><a href="" className='text-gray-30 text-[14px] font-[400] '>Cookie settings</a></li>
                 <li className='my-2'><a href="" className='text-gray-30 text-[14px] font-[400] '>Terms & conditions</a></li>
-                <li className='my-2'><a href="" className='text-gray-30 text-[14px] font-[400] '>Cancelation</a></li>
-                <li className='my-2'><a href="" className='text-gray-30 text-[14px] font-[400] '>Imprint</a></li>
-              </ul>
-              <ul>
-                <h4 className='text-[16px] md:text-[17px]  font-bold mb-3'>Others</h4>
-                <li className='my-2'><a href="" className='text-gray-30 text-[14px] font-[400] '>Our teams</a></li>
-                <li className='my-2'><a href="" className='text-gray-30 text-[14px] font-[400] '>Sustainability</a></li>
-                <li className='my-2'><a href="" className='text-gray-30 text-[14px] font-[400] '>Press</a></li>
-                <li className='my-2'><a href="" className='text-gray-30 text-[14px] font-[400] '>Jobs</a></li>
-                <li className='my-2'><a href="" className='text-gray-30 text-[14px] font-[400] '>Newsletter</a></li>
               </ul>
             </div>
           </div>
           {/* copyrights */}
-          <p className='mx-auto  lg:px-12 text-[14px] font-[500] py-2 px-8 rounded flex items-center justify-between mt-6 bg-gradient-to-r from-yellow-200 via-white to-white'><span>2025 ZenHomes</span><span>All rights reserved</span></p>
+          <p className='mx-auto lg:px-12 text-[14px] font-[500] py-2 px-8 rounded flex items-center justify-between mt-6 bg-gradient-to-r from-yellow-200 via-white to-white'>
+  <span>© 2025 Soumya & Srishty Properties Pvt. Ltd. All rights reserved.</span>
+  <span className='text-gray-700'>Made with ❤ by <a href="https://innocredesolutions.com" target="_blank" className="font-semibold text-blue-600 hover:underline">Innocrede Solutions</a></span>
+</p>
     
    </footer>
   )
