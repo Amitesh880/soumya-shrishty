@@ -28,7 +28,7 @@ const Achievements = () => {
     <div className=' flex flex-col xl:flex-row'>
         <div className='flex-[6] flex justify-center flex-col bg-[#008274] text-white px-6 lg:px-12 py-16'>
             <h2 className='text-[41px] leading-tight md:text-[49px] md:leading-[1.3] mb-4 font-bold'> Our Achievements </h2>
-            <p className='py-5 text-white max-w-[47rem]'>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Iusto assumenda, reprehenderit deserunt autem enim molestias eaque rerum voluptates laborum quo doloremque voluptas ipsa quis, non reiciendis voluptatum voluptate distinctio hic?</p>
+            <p className='py-5 text-white max-w-[47rem]'>With over 11 years of dedicated service, we have successfully delivered exceptional real estate solutions to our valued clients. Our commitment and expertise have allowed us to grow steadily and make a difference in every project we undertake.</p>
             <div className='flex flex-wrap gap-4'>
                 {statistics.map((statistic,index)=>(
                   <div key={index} className='p-4 rounded-lg'>
@@ -47,8 +47,8 @@ const Achievements = () => {
                 ))}
         </div>
     </div>
-    <div className='flex-[2] relative bg-yellow-100 px-6 lg:px-12 py-16 '>
-        <div className='p-4 rounded-lg flex items-center justify-center flex-col xl:-rotate-90'>
+    <div className='flex-[4] relative bg-yellow-100 px-6 lg:px-12 py-16 '>
+        <div className='p-4 rounded-lg flex items-center justify-center flex-col '>
             <span className='relative bottom-8  p-3 flex items-center rounded-full '><LiaCertificateSolid className='text-5xl text-black'/></span>
             <span className='relative bottom-3'>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Officiis atque dolorum totam aliquid!</span>
         </div>

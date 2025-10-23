@@ -35,7 +35,6 @@ We specialize in residential and investment plots that perfectly match your budg
         <FaStar />
         <FaStar />
       </div>
-      <div className='text-[14px] font-[700] sm:text-[16px]  relative top-1'>10k <span className='text-[14px] font-[400] sm:text-[16px]'>Excellent Reviews</span></div>
     </div>
     </div>
     </section>
