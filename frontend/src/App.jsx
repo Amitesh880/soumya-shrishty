@@ -2,6 +2,8 @@ import React, { Suspense, useState } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Home from './pages/Home'
 import Layout from './components/Layout'
+import Header from './components/Header'
+import Footer from './components/Footer'
 import Listing from './pages/Listing'
 import Property from './pages/Property'
 import Favourites from './pages/Favourites'
@@ -34,8 +36,14 @@ const App = () => {
               <Routes>
                 <Route path='/login' element={<Login />} />
                 <Route path='/register' element={<Register />} />
+                <Route path='/' element={
+                  <>
+                    <Header />
+                    <Home />
+                    <Footer />
+                  </>
+                } />
                 <Route element={<Layout />}>
-                  <Route path='/' element={<Home />} />
                   <Route path='/contact' element={<Contact />} />
                   <Route path='/listing'>
                     <Route index element={<Listing />} />
