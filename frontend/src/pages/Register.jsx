@@ -4,49 +4,43 @@ import { useForm } from '@mantine/form';
 import { IconAlertCircle } from '@tabler/icons-react';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import UserDetailContext from '../context/UserDetailContext';
-import { useContext } from 'react';
 import { useAuth } from '../context/AuthContext';
 
-const Login = () => {
+const Register = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const { setUserDetails } = useContext(UserDetailContext);
-  const { login } = useAuth();
+  const { register } = useAuth();
 
   const form = useForm({
     initialValues: {
+      name: '',
       email: '',
       password: '',
+      confirmPassword: '',
     },
     validate: {
+      name: (value) => (value.length < 2 ? 'Name must be at least 2 characters' : null),
       email: (value) => (/^\S+@\S+$/.test(value) ? null : 'Invalid email'),
       password: (value) => (value.length < 6 ? 'Password must be at least 6 characters' : null),
+      confirmPassword: (value, values) => 
+        value !== values.password ? 'Passwords do not match' : null,
     },
   });
 
-  const handleLogin = async (values) => {
+  const handleRegister = async (values) => {
     setIsLoading(true);
     setError('');
 
     try {
-      const result = await login(values.email, values.password);
+      const result = await register(values.email, values.password, values.name);
 
       if (result.success) {
-        // Update user details context
-        setUserDetails({
-          token: result.token,
-          user: result.user,
-          Favourites: [],
-          bookings: [],
-        });
-
-        toast.success('Login successful!');
-        navigate('/');
+        toast.success(result.message || 'Registration successful! Please login.');
+        navigate('/login');
       } else {
-        setError(result.message || 'Login failed');
-        toast.error(result.message || 'Login failed');
+        setError(result.message || 'Registration failed');
+        toast.error(result.message || 'Registration failed');
       }
     } catch (err) {
       setError('Network error. Please try again.');
@@ -56,18 +50,16 @@ const Login = () => {
     }
   };
 
-
-
   return (
     <Container size={420} my={40}>
       <Title
         align="center"
         sx={(theme) => ({ fontFamily: `Greycliff CF, ${theme.fontFamily}`, fontWeight: 900 })}
       >
-        Welcome Back
+        Create Account
       </Title>
       <Text color="dimmed" size="sm" align="center" mt={5}>
-        Sign in to your account
+        Join our real estate platform today
       </Text>
 
       <Paper withBorder shadow="md" p={30} mt={30} radius="md">
@@ -77,13 +69,22 @@ const Login = () => {
           </Alert>
         )}
 
-        <form onSubmit={form.onSubmit(handleLogin)}>
+        <form onSubmit={form.onSubmit(handleRegister)}>
+          <TextInput
+            label="Full Name"
+            placeholder="Your full name"
+            required
+            {...form.getInputProps('name')}
+          />
+          
           <TextInput
             label="Email"
             placeholder="your@email.com"
             required
+            mt="md"
             {...form.getInputProps('email')}
           />
+          
           <PasswordInput
             label="Password"
             placeholder="Your password"
@@ -91,16 +92,24 @@ const Login = () => {
             mt="md"
             {...form.getInputProps('password')}
           />
+          
+          <PasswordInput
+            label="Confirm Password"
+            placeholder="Confirm your password"
+            required
+            mt="md"
+            {...form.getInputProps('confirmPassword')}
+          />
 
           <Button fullWidth mt="xl" type="submit" loading={isLoading}>
-            Sign In
+            Create Account
           </Button>
         </form>
 
         <Text color="dimmed" size="sm" align="center" mt="md">
-          Don't have an account?{' '}
-          <Link to="/register" style={{ color: '#228be6', textDecoration: 'none' }}>
-            Create one here
+          Already have an account?{' '}
+          <Link to="/login" style={{ color: '#228be6', textDecoration: 'none' }}>
+            Sign in here
           </Link>
         </Text>
       </Paper>
@@ -108,4 +117,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;

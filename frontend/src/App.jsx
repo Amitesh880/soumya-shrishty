@@ -8,6 +8,7 @@ import Favourites from './pages/Favourites'
 import Bookings from './pages/Bookings'
 import Contact from './pages/Contact'
 import Login from './pages/Login'
+import Register from './pages/Register'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { ReactQueryDevtools } from 'react-query/devtools'
 import { ToastContainer } from 'react-toastify'
@@ -32,6 +33,7 @@ const App = () => {
             <Suspense fallback={<div>Loading...</div>}>
               <Routes>
                 <Route path='/login' element={<Login />} />
+                <Route path='/register' element={<Register />} />
                 <Route element={<Layout />}>
                   <Route path='/' element={<Home />} />
                   <Route path='/contact' element={<Contact />} />
