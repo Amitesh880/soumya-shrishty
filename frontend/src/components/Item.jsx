@@ -23,7 +23,7 @@ const Item = ({property}) => {
             <h4 className='text-[18px] font-[500] line-clamp-1' >{property.title}</h4>
             <div className='flex gap-x-2 py-2'>
                 <div className='flex items-center justify-center gap-x-2 border-r border-slate-900/50 pr-4  font-[500]'>
-                <MdSquareFoot /> {property.facilities.area}
+                <MdSquareFoot /> {property.facilities.area} sq. foot
                 </div>
                 <div className='flex items-center justify-center gap-x-2 border-r border-slate-900/50  pr-4  font-[500]'>
                <CgRuler />400
