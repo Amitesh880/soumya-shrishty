@@ -18,7 +18,7 @@ const Hero = () => {
 >
 
     <div className='relative top-32 xs:top-48'>
-      <h1 className='text-[49px] leading-tight md:text-[65px] md:leading-[1.3] mb-4 font-bold capitalize max-w-[41rem]'>Discover Your Dream Property Today with Soumya & Srishty Properties Pvt. Ltd.</h1>
+      <h1 className='text-[40px] leading-tight md:text-[65px] md:leading-[1.3] mb-4 font-bold capitalize max-w-[41rem]'>Discover Your Dream Property Today with Soumya & Srishty Properties Pvt. Ltd.</h1>
       <p className='my-5 max-w-[33rem]'>Build your future with Soumya & Srishty Properties Pvt. Ltd., a trusted real estate company offering Awasiy land use plots across Gorakhpur, Lucknow, Kushinagar, Sukrali, and Hetam.
 We specialize in residential and investment plots that perfectly match your budget and location preferences.</p>
     <div className='inline-flex items-center justify-center gap-4 bg-white rounded ring ring-slate-900/5 mt-4'>
