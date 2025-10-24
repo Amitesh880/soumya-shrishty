@@ -42,23 +42,19 @@ export const register = asyncHandler(async (req, res) => {
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
   const expires = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
 
-  // Store pending registration (do NOT create user yet)
-  const pending = await prisma.registrationRequest.upsert({
-    where: { email },
-    update: {
-      hashedPassword,
-      name: name || email.split('@')[0],
-      code: otp,
-      expires
-    },
-    create: {
+  // Create user immediately
+  const user = await prisma.user.create({
+    data: {
       email,
-      hashedPassword,
+      password: hashedPassword,
       name: name || email.split('@')[0],
-      code: otp,
-      expires
+      favResidenciesID: [],
+      bookedVisits: [],
+      isVerified: false,
+      verificationCode: otp,
+      verificationExpires: expires
     },
-    select: { email: true, expires: true }
+    select: { id: true, email: true, name: true, createdAt: true }
   });
 
   // Send OTP via email
@@ -104,10 +100,10 @@ export const register = asyncHandler(async (req, res) => {
     console.error('Email sending failed:', error);
   }
 
-  res.status(200).json({
+  res.status(201).json({
     success: true,
-    message: 'OTP sent to your email. Verify to create account.',
-    email: pending.email
+    message: 'User registered successfully. Please verify your email.',
+    user
   });
 });
 
@@ -119,50 +115,37 @@ export const verifyEmail = asyncHandler(async (req, res) => {
     return res.status(400).json({ success: false, message: 'Email and code are required' });
   }
 
-  // Find pending registration
-  const pending = await prisma.registrationRequest.findUnique({ where: { email } });
-  if (!pending) {
-    return res.status(404).json({ success: false, message: 'No pending registration found for this email' });
+  // Find user
+  const user = await prisma.user.findUnique({ where: { email } });
+  if (!user) {
+    return res.status(404).json({ success: false, message: 'User not found' });
+  }
+
+  // Check if already verified
+  if (user.isVerified) {
+    return res.status(200).json({ success: true, message: 'Email already verified', user: { id: user.id, email: user.email, name: user.name } });
   }
 
   // Validate code and expiry
-  if (!pending.code || !pending.expires || new Date(pending.expires) < new Date()) {
+  if (!user.verificationCode || !user.verificationExpires || new Date(user.verificationExpires) < new Date()) {
     return res.status(400).json({ success: false, message: 'Verification code expired or invalid' });
   }
-  if (pending.code !== code) {
+  if (user.verificationCode !== code) {
     return res.status(400).json({ success: false, message: 'Invalid verification code' });
   }
 
-  // Ensure user was not accidentally created already
-  const existingUser = await prisma.user.findUnique({ where: { email } });
-  if (existingUser) {
-    // Clean up pending request and just mark verified if needed
-    await prisma.registrationRequest.delete({ where: { email } });
-    if (!existingUser.isVerified) {
-      await prisma.user.update({ where: { email }, data: { isVerified: true, verificationCode: null, verificationExpires: null } });
-    }
-    return res.status(200).json({ success: true, message: 'Email verified successfully', user: { id: existingUser.id, email: existingUser.email, name: existingUser.name } });
-  }
-
-  // Create the actual user now
-  const user = await prisma.user.create({
-    data: {
-      email,
-      password: pending.hashedPassword,
-      name: pending.name || email.split('@')[0],
-      favResidenciesID: [],
-      bookedVisits: [],
-      isVerified: true,
-      verificationCode: null,
-      verificationExpires: null
+  // Mark user as verified
+  const updatedUser = await prisma.user.update({
+    where: { email },
+    data: { 
+      isVerified: true, 
+      verificationCode: null, 
+      verificationExpires: null 
     },
     select: { id: true, email: true, name: true, createdAt: true }
   });
 
-  // Remove pending registration
-  await prisma.registrationRequest.delete({ where: { email } });
-
-  res.status(200).json({ success: true, message: 'Account created and email verified', user });
+  res.status(200).json({ success: true, message: 'Email verified successfully', user: updatedUser });
 });
 
 
