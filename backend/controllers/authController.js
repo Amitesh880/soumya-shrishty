@@ -72,24 +72,46 @@ export const register = asyncHandler(async (req, res) => {
   // Send OTP via email (basic SMTP, env-driven)
   try {
     const nodemailer = await import('nodemailer');
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: parseInt(process.env.SMTP_PORT || '587', 10),
-      secure: false,
-      auth: process.env.SMTP_USER && process.env.SMTP_PASS ? {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS
-      } : undefined
-    });
+
+    let transporter;
+    if (process.env.SMTP_HOST) {
+      transporter = nodemailer.createTransport({
+        host: process.env.SMTP_HOST,
+        port: parseInt(process.env.SMTP_PORT || '587', 10),
+        secure: false,
+        auth: process.env.SMTP_USER && process.env.SMTP_PASS ? {
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASS
+        } : undefined
+      });
+    } else {
+      const testAccount = await nodemailer.createTestAccount();
+      transporter = nodemailer.createTransport({
+        host: 'smtp.ethereal.email',
+        port: 587,
+        secure: false,
+        auth: {
+          user: testAccount.user,
+          pass: testAccount.pass
+        }
+      });
+    }
 
     const fromEmail = process.env.FROM_EMAIL || 'no-reply@soumya-shrishty.local';
-    await transporter.sendMail({
+    const info = await transporter.sendMail({
       from: fromEmail,
       to: email,
       subject: 'Verify your email',
       text: `Your verification code is ${otp}. It expires in 15 minutes.`,
       html: `<p>Your verification code is <strong>${otp}</strong>.</p><p>It expires in 15 minutes.</p>`
     });
+
+    if (!process.env.SMTP_HOST) {
+      const previewUrl = nodemailer.getTestMessageUrl(info);
+      if (previewUrl) {
+        console.log('Verification email preview URL:', previewUrl);
+      }
+    }
   } catch (error) {
     console.error('Email sending failed:', error);
   }
@@ -271,24 +293,45 @@ export const forgotPassword = asyncHandler(async (req, res) => {
 
   try {
     const nodemailer = await import('nodemailer');
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: parseInt(process.env.SMTP_PORT || '587', 10),
-      secure: false,
-      auth: process.env.SMTP_USER && process.env.SMTP_PASS ? {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS
-      } : undefined
-    });
+    let transporter;
+
+    if (process.env.SMTP_HOST) {
+      transporter = nodemailer.createTransport({
+        host: process.env.SMTP_HOST,
+        port: parseInt(process.env.SMTP_PORT || '587', 10),
+        secure: false,
+        auth: process.env.SMTP_USER && process.env.SMTP_PASS ? {
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASS
+        } : undefined
+      });
+    } else {
+      // Dev fallback using Ethereal for testing email delivery
+      const testAccount = await nodemailer.createTestAccount();
+      transporter = nodemailer.createTransport({
+        host: 'smtp.ethereal.email',
+        port: 587,
+        secure: false,
+        auth: {
+          user: testAccount.user,
+          pass: testAccount.pass
+        }
+      });
+    }
 
     const fromEmail = process.env.FROM_EMAIL || 'no-reply@soumya-shrishty.local';
-    await transporter.sendMail({
+    const info = await transporter.sendMail({
       from: fromEmail,
       to: email,
       subject: 'Password reset code',
       text: `Your password reset code is ${otp}. It expires in 15 minutes.`,
       html: `<p>Your password reset code is <strong>${otp}</strong>.</p><p>It expires in 15 minutes.</p>`
     });
+
+    // Log preview URL in dev fallback
+    if (!process.env.SMTP_HOST) {
+      console.log('Password reset email preview URL:', nodemailer.getTestMessageUrl(info));
+    }
   } catch (error) {
     console.error('Reset email sending failed:', error);
   }
