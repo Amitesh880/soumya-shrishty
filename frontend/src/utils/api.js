@@ -93,10 +93,11 @@ export const createUser = async (email, token) => {
     }
 }
 
-export const bookVisit = async (date, propertyId, email, token) => {
+export const bookVisit = async (date, propertyId, email, token, phoneNumber) => {
     try {
         console.log("bookVisit API - Token received:", token);
         console.log("bookVisit API - Authorization header:", `Bearer ${token}`);
+        console.log("bookVisit API - Phone Number:", phoneNumber);
         
         const response = await api.post(
             `/user/bookVisit/${propertyId}`,
@@ -104,6 +105,7 @@ export const bookVisit = async (date, propertyId, email, token) => {
                 email,
                 id: propertyId,
                 date: dayjs(date).format("DD-MM-YYYY"),
+                phoneNumber,
             },
             {
                 headers: {

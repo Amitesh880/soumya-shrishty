@@ -18,23 +18,40 @@ export const createUser = asyncHandler(async (req, res) => {
 
 export const bookVisit = asyncHandler(async (req, res) => {
   const userId = req.userId;
-  const { date } = req.body;
+  const { date, phoneNumber, email } = req.body;
   const { id } = req.params;
 
   try {
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { bookedVisits: true }
+      select: { bookedVisits: true, name: true }
     });
 
     if (user.bookedVisits.some((visit) => visit.id === id)) {
       return res.status(400).json({ message: "This residency is already booked by you" });
     }
 
+    // Get property details for the contact message
+    const property = await prisma.residency.findUnique({
+      where: { id },
+      select: { title: true }
+    });
+
+    // Update user with booking information
     await prisma.user.update({
       where: { id: userId },
       data: {
-        bookedVisits: { push: { id, date } }
+        bookedVisits: { push: { id, date, phoneNumber } },
+        // Add to contactMessages
+        contactMessages: {
+          create: {
+            name: user.name || "Property Visitor",
+            email: email,
+            phone: phoneNumber,
+            subject: `Property Visit Booking - ${property?.title || id}`,
+            message: `Booking for property visit on ${date}. Contact number: ${phoneNumber}`
+          }
+        }
       }
     });
 

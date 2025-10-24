@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { Modal, Button } from "@mantine/core";
+import { Modal, Button, TextInput } from "@mantine/core";
 import UserDetailContext from "../context/UserDetailContext";
 import { useMutation } from "react-query";
 import { DatePicker } from "@mantine/dates";
@@ -10,6 +10,7 @@ import { useAuth } from "../context/AuthContext";
 
 const BookingModal = ({ opened, setopened, propertyId, email }) => {
   const [value, setvalue] = useState(null);
+  const [phoneNumber, setPhoneNumber] = useState("");
   const { isAuthenticated, user, token } = useAuth();
   const {
     userDetails: { token: contextToken },
@@ -28,6 +29,7 @@ const BookingModal = ({ opened, setopened, propertyId, email }) => {
         {
           id: propertyId,
           date: dayjs(value).format("DD-MM-YYYY"),
+          phoneNumber
         },
       ],
     }));
@@ -50,7 +52,7 @@ const BookingModal = ({ opened, setopened, propertyId, email }) => {
         throw new Error("No authentication token available");
       }
       
-      return bookVisit(value, propertyId, email, authToken);
+      return bookVisit(value, propertyId, email, authToken, phoneNumber);
     },
     onSuccess: () => handleBookingSuccess(),
     onError: (error) => {
@@ -65,7 +67,17 @@ const BookingModal = ({ opened, setopened, propertyId, email }) => {
     <Modal opened={opened} onClose={() => setopened(false)} title="Book a Visit" centered>
       <div className="flex justify-center flex-col gap-4">
         <DatePicker value={value} onChange={setvalue} minDate={new Date()} />
-        <Button disabled={!value || isLoading || !(token || contextToken) || !isAuthenticated} onClick={() => mutate()}>
+        <TextInput
+          placeholder="Your contact number"
+          label="Phone Number"
+          required
+          value={phoneNumber}
+          onChange={(e) => setPhoneNumber(e.target.value)}
+        />
+        <Button 
+          disabled={!value || !phoneNumber || isLoading || !(token || contextToken) || !isAuthenticated} 
+          onClick={() => mutate()}
+        >
           {!isAuthenticated ? "Please log in" : !(token || contextToken) ? "Loading authentication..." : "Book Visit"}
         </Button>
       </div>
