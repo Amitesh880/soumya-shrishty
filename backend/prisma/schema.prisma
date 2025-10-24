@@ -30,7 +30,7 @@ model Residency {
     address     String
     city        String
     country     String
-    image       String
+    media       Json     // Changed from image to media to support multiple images and videos
     facilities  Json
     ownerId     String   @db.ObjectId
     owner       User     @relation("Owner", fields: [ownerId], references: [id])

@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import { useQuery, useMutation } from "react-query";
 import { getProperty, removeBooking } from "../utils/api";
 import { PuffLoader } from "react-spinners";
-import { FaStar } from "react-icons/fa";
+import { FaStar, FaChevronLeft, FaChevronRight, FaPlay } from "react-icons/fa";
 import {
   MdLocationOn,
   MdSquareFoot,
@@ -20,6 +20,7 @@ import HeartBtn from "../components/HeartBtn";
 
 const Property = () => {
   const [modalOpened, setmodalOpened] = useState(false);
+  const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
   const { validateLogin } = useAuthCheck();
   const { pathname } = useLocation();
   const id = pathname.split("/").slice(-1)[0];
@@ -65,18 +66,134 @@ const Property = () => {
     }
   };
 
+  // Get media array, fallback to single image if media doesn't exist
+  const getMediaArray = () => {
+    if (data?.media && Array.isArray(data.media) && data.media.length > 0) {
+      return data.media;
+    }
+    // Fallback for old data structure
+    if (data?.image) {
+      return [{ type: "image", url: data.image, alt: data.title }];
+    }
+    return [];
+  };
+
+  const mediaArray = getMediaArray();
+
+  const nextMedia = () => {
+    setCurrentMediaIndex((prev) => 
+      prev === mediaArray.length - 1 ? 0 : prev + 1
+    );
+  };
+
+  const prevMedia = () => {
+    setCurrentMediaIndex((prev) => 
+      prev === 0 ? mediaArray.length - 1 : prev - 1
+    );
+  };
+
+  const currentMedia = mediaArray[currentMediaIndex];
+
 
   return (
     <section className="max-padd-container mx-[2px] my-[99px]">
       <div className="pb-2 relative">
-        <img
-          src={data?.image}
-          alt={data?.title}
-          className="rounded-tr-3xl rounded-tl-3xl max-h-[27rem] w-full object-cover aspect-square"
-        />
+        {/* Media Gallery */}
+        <div className="relative rounded-tr-3xl rounded-tl-3xl max-h-[27rem] w-full overflow-hidden">
+          {currentMedia ? (
+            currentMedia.type === "video" ? (
+              <video
+                src={currentMedia.url}
+                alt={currentMedia.alt || data?.title}
+                className="w-full h-full object-cover aspect-square"
+                controls
+                poster={currentMedia.thumbnail}
+              />
+            ) : (
+              <img
+                src={currentMedia.url}
+                alt={currentMedia.alt || data?.title}
+                className="w-full h-full object-cover aspect-square"
+              />
+            )
+          ) : (
+            <div className="w-full h-full bg-gray-200 flex items-center justify-center aspect-square">
+              <span className="text-gray-500">No media available</span>
+            </div>
+          )}
+          
+          {/* Navigation arrows */}
+          {mediaArray.length > 1 && (
+            <>
+              <button
+                onClick={prevMedia}
+                className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70 transition-all"
+              >
+                <FaChevronLeft />
+              </button>
+              <button
+                onClick={nextMedia}
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-70 transition-all"
+              >
+                <FaChevronRight />
+              </button>
+            </>
+          )}
+          
+          {/* Media counter */}
+          {mediaArray.length > 1 && (
+            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-sm">
+              {currentMediaIndex + 1} / {mediaArray.length}
+            </div>
+          )}
+          
+          {/* Video play indicator */}
+          {currentMedia?.type === "video" && (
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className="bg-black bg-opacity-30 rounded-full p-4">
+                <FaPlay className="text-white text-2xl ml-1" />
+              </div>
+            </div>
+          )}
+        </div>
+        
         <div className="absolute top-8 right-8">
           <HeartBtn id={id}/>
         </div>
+        
+        {/* Thumbnail strip */}
+        {mediaArray.length > 1 && (
+          <div className="flex gap-2 mt-4 overflow-x-auto pb-2">
+            {mediaArray.map((media, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentMediaIndex(index)}
+                className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all ${
+                  index === currentMediaIndex ? 'border-blue-500' : 'border-gray-300'
+                }`}
+              >
+                {media.type === "video" ? (
+                  <div className="relative w-full h-full bg-gray-200 flex items-center justify-center">
+                    <FaPlay className="text-gray-600" />
+                    {media.thumbnail && (
+                      <img
+                        src={media.thumbnail}
+                        alt={media.alt}
+                        className="absolute inset-0 w-full h-full object-cover"
+                      />
+                    )}
+                  </div>
+                ) : (
+                  <img
+                    src={media.url}
+                    alt={media.alt}
+                    className="w-full h-full object-cover"
+                  />
+                )}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="xl:flex justify-between gap-8">

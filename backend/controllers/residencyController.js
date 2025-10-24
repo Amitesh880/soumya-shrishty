@@ -15,7 +15,7 @@ const transformResidencyData = (data) => {
         address: item.address,
         city: item.city,
         country: item.country,
-        image: item.image,
+        media: item.media || (item.image ? [{type: "image", url: item.image, alt: item.title}] : []),
         facilities: item.facilities || { bedrooms: 2, bathrooms: 2, parkings: 1 },
         createdAt: item.createdAt?.$date ? new Date(item.createdAt.$date) : new Date(),
         updatedAt: item.updatedAt?.$date ? new Date(item.updatedAt.$date) : new Date()
@@ -25,7 +25,7 @@ const transformResidencyData = (data) => {
 export const createResidency=asyncHandler(async(req,res)=>{
     console.log("Creating residency with data:", req.body);
     
-    const{ title,description,price,address,country,city,facilities,image,userEmail }=req.body
+    const{ title,description,price,address,country,city,facilities,media,userEmail }=req.body
     const userId = req.userId
 
     console.log("User ID:", userId);
@@ -39,6 +39,13 @@ export const createResidency=asyncHandler(async(req,res)=>{
         });
     }
 
+    // Default media if none provided
+    const defaultMedia = [{
+        type: "image",
+        url: "https://images.unsplash.com/photo-1584738766473-61c083514bf4?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        alt: "Default property image"
+    }];
+
     try{
         const residency=await prisma.residency.create({
             data:{
@@ -49,7 +56,7 @@ export const createResidency=asyncHandler(async(req,res)=>{
                 country,
                 city,
                 facilities: facilities || {},
-                image: image || "https://images.unsplash.com/photo-1584738766473-61c083514bf4?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                media: media || defaultMedia,
                 ownerId: userId
             }
         })
@@ -105,7 +112,7 @@ export const createResidency=asyncHandler(async(req,res)=>{
              address: doc.address,
              city: doc.city,
              country: doc.country,
-             image: doc.image,
+             media: doc.media || (doc.image ? [{type: "image", url: doc.image, alt: doc.title}] : []),
              facilities: doc.facilities || {},
              createdAt: doc.createdAt ? new Date(doc.createdAt) : undefined,
              updatedAt: doc.updatedAt ? new Date(doc.updatedAt) : undefined,
@@ -154,7 +161,7 @@ export const createResidency=asyncHandler(async(req,res)=>{
              address: doc.address,
              city: doc.city,
              country: doc.country,
-             image: doc.image,
+             media: doc.media || (doc.image ? [{type: "image", url: doc.image, alt: doc.title}] : []),
              facilities: doc.facilities || {},
              ownerId: normalizeObjectId(doc.ownerId),
              createdAt: doc.createdAt ? new Date(doc.createdAt) : undefined,

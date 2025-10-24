@@ -7,10 +7,21 @@ import HeartBtn from './HeartBtn'
 
 const Item = ({property}) => {
   const navigate=useNavigate()
+  
+  // Get the first media item or fallback to image
+  const getDisplayImage = () => {
+    if (property.media && Array.isArray(property.media) && property.media.length > 0) {
+      const firstMedia = property.media[0];
+      return firstMedia.type === 'video' ? (firstMedia.thumbnail || firstMedia.url) : firstMedia.url;
+    }
+    // Fallback for old data structure
+    return property.image;
+  };
+  
   return (
     <div onClick={()=>{navigate(`../listing/${property.id}`)}} className='rounded-lg overflow-hidden bg-white ring ring-slate-900/5'>
       <div className='relative'>
-        <img src ={property.image} alt={property.title} className='h-[13rem] w-full aspect-square object-cover'/>
+        <img src={getDisplayImage()} alt={property.title} className='h-[13rem] w-full aspect-square object-cover'/>
         <div className='absolute top-4 right-6'>
             <HeartBtn id={property.id}/>
         </div>
