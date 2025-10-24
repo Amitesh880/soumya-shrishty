@@ -79,6 +79,7 @@ export const register = asyncHandler(async (req, res) => {
         host: process.env.SMTP_HOST,
         port: parseInt(process.env.SMTP_PORT || '587', 10),
         secure: false,
+        requireTLS: true,
         auth: process.env.SMTP_USER && process.env.SMTP_PASS ? {
           user: process.env.SMTP_USER,
           pass: process.env.SMTP_PASS
@@ -269,6 +270,7 @@ export const verifyToken = asyncHandler(async (req, res, next) => {
 // Request password reset - sends OTP to email
 export const forgotPassword = asyncHandler(async (req, res) => {
   const { email } = req.body;
+  console.log('🔄 Forgot password request for:', email);
 
   if (!email) {
     return res.status(400).json({ success: false, message: 'Email is required' });
@@ -277,8 +279,11 @@ export const forgotPassword = asyncHandler(async (req, res) => {
   // Always respond success to avoid email enumeration
   const user = await prisma.user.findUnique({ where: { email } });
   if (!user) {
+    console.log('❌ User not found for email:', email);
     return res.status(200).json({ success: true, message: 'If this email exists, an OTP has been sent' });
   }
+
+  console.log('✅ User found, generating OTP for:', email);
 
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
   const expires = new Date(Date.now() + 15 * 60 * 1000);
@@ -300,6 +305,7 @@ export const forgotPassword = asyncHandler(async (req, res) => {
         host: process.env.SMTP_HOST,
         port: parseInt(process.env.SMTP_PORT || '587', 10),
         secure: false,
+        requireTLS: true,
         auth: process.env.SMTP_USER && process.env.SMTP_PASS ? {
           user: process.env.SMTP_USER,
           pass: process.env.SMTP_PASS
@@ -320,6 +326,9 @@ export const forgotPassword = asyncHandler(async (req, res) => {
     }
 
     const fromEmail = process.env.FROM_EMAIL || 'no-reply@soumya-shrishty.local';
+    console.log('📧 Sending email from:', fromEmail, 'to:', email);
+    console.log('🔧 Using SMTP:', process.env.SMTP_HOST ? 'Yes' : 'No (Ethereal)');
+    
     const info = await transporter.sendMail({
       from: fromEmail,
       to: email,
@@ -328,9 +337,13 @@ export const forgotPassword = asyncHandler(async (req, res) => {
       html: `<p>Your password reset code is <strong>${otp}</strong>.</p><p>It expires in 15 minutes.</p>`
     });
 
+    console.log('✅ Email sent successfully! Message ID:', info.messageId);
+
     // Log preview URL in dev fallback
     if (!process.env.SMTP_HOST) {
       console.log('Password reset email preview URL:', nodemailer.getTestMessageUrl(info));
+    } else {
+      console.log('📬 Email sent via SMTP to:', email);
     }
   } catch (error) {
     console.error('Reset email sending failed:', error);
