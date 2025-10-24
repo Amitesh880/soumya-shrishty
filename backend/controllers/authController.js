@@ -179,13 +179,6 @@ export const login = asyncHandler(async (req, res) => {
     });
   }
 
-  // Block login if not verified
-  if (!user.isVerified) {
-    return res.status(403).json({
-      success: false,
-      message: "Please verify your email to log in"
-    });
-  }
 
   // Generate token
   const token = generateToken(user.id);
