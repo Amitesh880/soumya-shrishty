@@ -92,6 +92,12 @@ const Login = () => {
             {...form.getInputProps('password')}
           />
 
+          <Text size="sm" align="right" mt="xs">
+            <Link to="/forgot-password" style={{ color: '#228be6', textDecoration: 'none' }}>
+              Forgot password?
+            </Link>
+          </Text>
+
           <Button fullWidth mt="xl" type="submit" loading={isLoading}>
             Sign In
           </Button>

@@ -102,6 +102,51 @@ export const AuthProvider = ({ children }) => {
     return !!(token && user);
   };
 
+  const forgotPassword = async (email) => {
+    try {
+      const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+      const response = await fetch(`${BASE_URL}/auth/forgot-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      const data = await response.json();
+      return { success: response.ok, message: data.message };
+    } catch (error) {
+      return { success: false, message: 'Network error. Please try again.' };
+    }
+  };
+
+  const verifyReset = async (email, code) => {
+    try {
+      const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+      const response = await fetch(`${BASE_URL}/auth/verify-reset`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, code })
+      });
+      const data = await response.json();
+      return { success: response.ok, message: data.message };
+    } catch (error) {
+      return { success: false, message: 'Network error. Please try again.' };
+    }
+  };
+
+  const resetPassword = async (email, code, newPassword) => {
+    try {
+      const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+      const response = await fetch(`${BASE_URL}/auth/reset-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, code, newPassword })
+      });
+      const data = await response.json();
+      return { success: response.ok, message: data.message };
+    } catch (error) {
+      return { success: false, message: 'Network error. Please try again.' };
+    }
+  };
+
   const value = {
     user,
     token,
@@ -111,6 +156,9 @@ export const AuthProvider = ({ children }) => {
     logout,
     getToken,
     isAuthenticated: isAuthenticated(),
+    forgotPassword,
+    verifyReset,
+    resetPassword,
   };
 
   return (

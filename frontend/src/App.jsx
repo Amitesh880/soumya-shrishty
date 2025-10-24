@@ -11,6 +11,8 @@ import Bookings from './pages/Bookings'
 import Contact from './pages/Contact'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import ForgotPassword from './pages/ForgotPassword'
+import ResetPassword from './pages/ResetPassword'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { ReactQueryDevtools } from 'react-query/devtools'
 import { ToastContainer } from 'react-toastify'
@@ -36,6 +38,8 @@ const App = () => {
               <Routes>
                 <Route path='/login' element={<Login />} />
                 <Route path='/register' element={<Register />} />
+                <Route path='/forgot-password' element={<ForgotPassword />} />
+                <Route path='/reset-password' element={<ResetPassword />} />
                 <Route path='/' element={
                   <>
                     <Header />
