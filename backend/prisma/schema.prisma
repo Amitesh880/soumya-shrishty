@@ -18,6 +18,12 @@ model User {
     favResidenciesID String[]    @db.ObjectId
     ownedResidencies Residency[] @relation("Owner")
     contactMessages  Contact[]   @relation("UserContacts")
+    isVerified       Boolean     @default(false)
+    verificationCode String?
+    verificationExpires DateTime?
+    // Add fields for password reset OTP
+    resetCode            String?
+    resetExpires         DateTime?
     createdAt        DateTime    @default(now())
     updatedAt        DateTime    @updatedAt
 }
