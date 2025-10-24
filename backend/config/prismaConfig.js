@@ -15,11 +15,48 @@ const prisma = new PrismaClient({
     log: process.env.NODE_ENV === 'development' ? ['query', 'info', 'warn', 'error'] : ['error'],
 });
 
+async function fixUserCreatedAtIfNeeded() {
+    try {
+        // Convert string-typed createdAt to BSON Date
+        const convertStrings = await prisma.$runCommandRaw({
+            update: 'User',
+            updates: [
+                {
+                    q: { createdAt: { $type: 'string' } },
+                    u: [
+                        { $set: { createdAt: { $toDate: "$createdAt" }, updatedAt: new Date() } },
+                    ],
+                    multi: true,
+                    upsert: false,
+                },
+            ],
+        });
+        console.log("User.createdAt string→Date fix:", JSON.stringify(convertStrings));
+
+        // Backfill missing or null createdAt
+        const backfillMissing = await prisma.$runCommandRaw({
+            update: 'User',
+            updates: [
+                {
+                    q: { $or: [ { createdAt: { $exists: false } }, { createdAt: null } ] },
+                    u: { $set: { createdAt: new Date(), updatedAt: new Date() } },
+                    multi: true,
+                    upsert: false,
+                },
+            ],
+        });
+        console.log("User.createdAt null/missing backfill:", JSON.stringify(backfillMissing));
+    } catch (e) {
+        console.warn("User.createdAt fix skipped:", e.message);
+    }
+}
+
 // Test database connection only if DATABASE_URL is available
 if (process.env.DATABASE_URL) {
     prisma.$connect()
-        .then(() => {
+        .then(async () => {
             console.log("✅ Database connected successfully");
+            await fixUserCreatedAtIfNeeded();
         })
         .catch((error) => {
             console.error("❌ Database connection failed:", error.message);
