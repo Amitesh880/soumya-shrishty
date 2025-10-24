@@ -99,7 +99,7 @@ const Property = () => {
     <section className="max-padd-container mx-[2px] my-[99px]">
       <div className="pb-2 relative">
         {/* Media Gallery */}
-        <div className="relative rounded-tr-3xl rounded-tl-3xl max-h-[60%] max-w-[80%] object-contain m-auto">
+        <div className="relative rounded-tr-3xl rounded-tl-3xl max-h-[30rem] max-w-[80%] object-contain m-auto">
           {currentMedia ? (
             currentMedia.type === "video" ? (
               <video
