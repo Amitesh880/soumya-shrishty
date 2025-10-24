@@ -19,7 +19,7 @@ const BasicDetails = ({
         validate: {
             title: (value) => validateString(value),
             description: (value) => validateString(value),
-            price: (value) => (value < 999 ? "Must be minimum 200000 Rupees" : null),
+            price: (value) => (value < 200 ? "Must be minimum 200 Rupees" : null),
         },
     });
 

@@ -18,7 +18,7 @@ const Item = ({property}) => {
         <div className='m-3'>
             <div className='flex items-center justify-between'>
                 <h5 className='text-[16px] font-[700] my-1 text-green-400 '>{property.city}</h5>
-                <h4 className='text-[16px] md:text-[17px] mb-2 font-bold'>${property.price}.00/sq. ft.</h4>
+                <h4 className='text-[16px] md:text-[17px] mb-2 font-bold'>₹{property.price}.00/sq. ft.</h4>
             </div>
             <h4 className='text-[18px] font-[500] line-clamp-1' >{property.title}</h4>
             <div className='flex gap-x-2 py-2'>

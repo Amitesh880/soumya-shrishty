@@ -88,7 +88,7 @@ const Property = () => {
 
           <div className="flex justify-between pt-3">
             <h4 className="font-bold text-[20px]">{data?.title || "Property Title"}</h4>
-            <div className="font-bold text-[20px]">${data?.price || 0}.00</div>
+            <div className="font-bold text-[20px]">₹ {data?.price || 0}.00</div>
           </div>
 
           <div className="flex justify-between py-1">
