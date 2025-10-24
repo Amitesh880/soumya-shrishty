@@ -18,7 +18,7 @@ const prisma = new PrismaClient({
 async function fixUserCreatedAtIfNeeded() {
     try {
         // Convert string-typed createdAt to BSON Date
-        const convertStrings = await prisma.$runCommandRaw({
+        const convertCreatedAtStrings = await prisma.$runCommandRaw({
             update: 'User',
             updates: [
                 {
@@ -31,10 +31,10 @@ async function fixUserCreatedAtIfNeeded() {
                 },
             ],
         });
-        console.log("User.createdAt string→Date fix:", JSON.stringify(convertStrings));
+        console.log("User.createdAt string→Date fix:", JSON.stringify(convertCreatedAtStrings));
 
         // Backfill missing or null createdAt
-        const backfillMissing = await prisma.$runCommandRaw({
+        const backfillCreatedAtMissing = await prisma.$runCommandRaw({
             update: 'User',
             updates: [
                 {
@@ -45,9 +45,39 @@ async function fixUserCreatedAtIfNeeded() {
                 },
             ],
         });
-        console.log("User.createdAt null/missing backfill:", JSON.stringify(backfillMissing));
+        console.log("User.createdAt null/missing backfill:", JSON.stringify(backfillCreatedAtMissing));
+
+        // Convert string-typed updatedAt to BSON Date
+        const convertUpdatedAtStrings = await prisma.$runCommandRaw({
+            update: 'User',
+            updates: [
+                {
+                    q: { updatedAt: { $type: 'string' } },
+                    u: [
+                        { $set: { updatedAt: { $toDate: "$updatedAt" } } },
+                    ],
+                    multi: true,
+                    upsert: false,
+                },
+            ],
+        });
+        console.log("User.updatedAt string→Date fix:", JSON.stringify(convertUpdatedAtStrings));
+
+        // Backfill missing or null updatedAt
+        const backfillUpdatedAtMissing = await prisma.$runCommandRaw({
+            update: 'User',
+            updates: [
+                {
+                    q: { $or: [ { updatedAt: { $exists: false } }, { updatedAt: null } ] },
+                    u: { $set: { updatedAt: new Date() } },
+                    multi: true,
+                    upsert: false,
+                },
+            ],
+        });
+        console.log("User.updatedAt null/missing backfill:", JSON.stringify(backfillUpdatedAtMissing));
     } catch (e) {
-        console.warn("User.createdAt fix skipped:", e.message);
+        console.warn("User.createdAt/updatedAt fix skipped:", e.message);
     }
 }
 
