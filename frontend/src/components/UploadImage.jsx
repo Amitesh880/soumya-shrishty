@@ -3,12 +3,15 @@ import React, {useEffect, useRef, useState} from 'react'
 import {MdOutlineCloudUpload} from 'react-icons/md'
 
 const UploadImage = ({prevStep,nextStep,propertyDetails,setPropertyDetails})=>{
-    const [imageURL,setImageURL] = useState(propertyDetails.image)
+    const [imageURL,setImageURL] = useState(propertyDetails.media?.[0]?.url || '')
     const cloudinaryRef = useRef()
     const widgeRef = useRef()
 
     const handleNext =()=>{
-        setPropertyDetails((prev)=>({...prev,image:imageURL}))
+        setPropertyDetails((prev)=>({
+            ...prev,
+            media: imageURL ? [{ type: 'image', url: imageURL, alt: prev.title || 'Property image' }] : []
+        }))
         nextStep()
     }
 

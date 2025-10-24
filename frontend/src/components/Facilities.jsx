@@ -55,7 +55,7 @@ const Facilities = ({
         country: "",
         city: "",
         address: "",
-        img: null,
+        media: [],
         facilities: {
           bedrooms: 0,
           parkings: 0,
